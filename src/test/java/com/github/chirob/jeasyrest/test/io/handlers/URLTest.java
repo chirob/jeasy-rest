@@ -19,7 +19,7 @@ public class URLTest extends BaseTest {
 
     @Test
     public void test2() throws IOException {
-        URL url = getClass().getResource("/jeasyrest/stream.handlers");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("jeasyrest/stream.handlers");
         Source source = new Source(url, "utf8");
         source.writeTo(new Source(out, "utf8"));
     }
