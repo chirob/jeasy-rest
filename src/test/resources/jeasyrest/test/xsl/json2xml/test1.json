@@ -1,0 +1,62 @@
+<json-envelope>
+{
+  "rispostaIAC": {
+    "intestazione": {
+      "banca": "0082",
+      "filiale": "0100",
+      "operatore": "I82WOJMC",
+      "ndgOrdinante": "0000401986471",
+      "ndgPatrimonio": "0000401986471",
+      "idMessaggio": "34fbd249-c72a-44c3-b7c1-b66e9f6d40f1",
+      "dataMessaggio": "2016-08-12T00:41:41+0200"
+    },
+    "corpo": {
+      "gruppiStrumenti": [
+        {
+          "riferimento": "00401952835",
+          "strumenti": {
+            "codiceSimbolo": "SC 00069038591",
+            "limiteSuperato": false,
+            "prezzo": 98.09
+          }
+        },
+        {
+          "riferimento": "00401840119",
+          "strumenti": [
+            {
+              "codiceSimbolo": "SC 11100002259",
+              "limiteSuperato": false,
+              "msg": "ciao"
+            },
+            {
+              "codiceSimbolo": "SC 11100002424",
+              "limiteSuperato": false
+            }
+          ]
+        },
+        {
+          "riferimento": "00400604671",
+          "strumenti": {
+            "codiceSimbolo": "SC 11100001970",
+            "limiteSuperato": false
+          }
+        },
+        {
+          "riferimento": "00401788801",
+          "strumenti": {
+            "codiceSimbolo": "SC 00099229802",
+            "limiteSuperato": false
+          }
+        },
+        {
+          "riferimento": "00401889514",
+          "strumenti": {
+            "codiceSimbolo": "SC 00676406603",
+            "limiteSuperato": false
+          }
+        }
+      ]
+    }
+  }
+}
+</json-envelope>

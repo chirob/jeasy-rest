@@ -1,0 +1,14 @@
+java.io.Reader=com.github.chirob.jeasyrest.io.handlers.ReaderHandler
+java.io.Writer=com.github.chirob.jeasyrest.io.handlers.WriterHandler
+java.io.InputStream=com.github.chirob.jeasyrest.io.handlers.InputStreamHandler
+java.io.OutputStream=com.github.chirob.jeasyrest.io.handlers.OutputStreamHandler
+java.io.File=com.github.chirob.jeasyrest.io.handlers.FileHandler
+java.net.URLConnection=com.github.chirob.jeasyrest.io.handlers.URLConnectionHandler
+java.net.URL=com.github.chirob.jeasyrest.io.handlers.URLHandler
+java.net.URI=com.github.chirob.jeasyrest.io.handlers.URIHandler
+java.lang.CharSequence=com.github.chirob.jeasyrest.io.handlers.CharSequenceHandler
+javax.activation.DataSource=com.github.chirob.jeasyrest.io.handlers.DataSourceHandler
+java.sql.Blob=com.github.chirob.jeasyrest.io.handlers.BlobHandler
+java.sql.Clob=com.github.chirob.jeasyrest.io.handlers.ClobHandler
+
+com.github.chirob.jeasyrest.core.Resource=com.github.chirob.jeasyrest.core.io.handlers.ResourceHandler

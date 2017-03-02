@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rispostaIAC>
+	<intestazione>
+		<banca>0082</banca>
+		<filiale>0100</filiale>
+		<operatore>I82WOJMC</operatore>
+		<ndgOrdinante>0000401986471</ndgOrdinante>
+		<ndgPatrimonio>0000401986471</ndgPatrimonio>
+		<idMessaggio>34fbd249-c72a-44c3-b7c1-b66e9f6d40f1</idMessaggio>
+		<dataMessaggio>2016-08-12T00:41:41+0200</dataMessaggio>
+	</intestazione>
+	<corpo>
+		<gruppiStrumenti>
+			<riferimento>00401952835</riferimento>
+			<strumenti>
+				<codiceSimbolo>SC 00069038591</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+				<prezzo string="false">98.09</prezzo>
+			</strumenti>
+		</gruppiStrumenti>
+		<gruppiStrumenti>
+			<riferimento>00401840119</riferimento>
+			<strumenti>
+				<codiceSimbolo>SC 11100002259</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+				<msg>ciao</msg>
+			</strumenti>
+			<strumenti>
+				<codiceSimbolo>SC 11100002424</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+			</strumenti>
+		</gruppiStrumenti>
+		<gruppiStrumenti>
+			<riferimento>00400604671</riferimento>
+			<strumenti>
+				<codiceSimbolo>SC 11100001970</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+			</strumenti>
+		</gruppiStrumenti>
+		<gruppiStrumenti>
+			<riferimento>00401788801</riferimento>
+			<strumenti>
+				<codiceSimbolo>SC 00099229802</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+			</strumenti>
+		</gruppiStrumenti>
+		<gruppiStrumenti>
+			<riferimento>00401889514</riferimento>
+			<strumenti>
+				<codiceSimbolo>SC 00676406603</codiceSimbolo>
+				<limiteSuperato string="false">false</limiteSuperato>
+			</strumenti>
+		</gruppiStrumenti>
+	</corpo>
+</rispostaIAC>
