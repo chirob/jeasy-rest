@@ -35,6 +35,7 @@ class ResourceMap {
             }
             Resource resource = resourceConstr.newInstance();
             resource.path = URI.create(resourcePath);
+            resource.pathPattern = pathPattern;
             resource.parameters = new String[params.length];
             for (int i = 0; i < params.length; i++) {
                 resource.setParameter(i, params[i].toString());
@@ -48,8 +49,8 @@ class ResourceMap {
         resourceMap = new HashMap<MessageFormat, InstanceConstructor<Resource>>();
         init("jeasyrest/resources");
         init("jeasyrest/resources.override");
-        
-        ResourcePolicy.initialize();        
+
+        ResourcePolicy.initialize();
     }
 
     @SuppressWarnings("unchecked")
@@ -82,6 +83,17 @@ class ResourceMap {
                         throw new IllegalArgumentException("Cannot create resource '" + name + "'", e);
                     }
                 }
+            }
+        }
+        
+        resources = new ClassloaderResources(handlersResourceName + ".policy");
+        for (URL url : resources) {
+            try {
+                resourceProps = new LoadedProperties(url);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            for (Entry<Object, Object> entry : resourceProps.entrySet()) {
             }
         }
     }

@@ -31,7 +31,7 @@ public class ResourceHandler extends BinaryStreamHandler {
 
     private static Method getMethod(Object... sourceParams) {
         for (Object param : sourceParams) {
-            if (param instanceof Resource.Method) {
+            if (param instanceof Method) {
                 return (Method) param;
             } else {
                 try {

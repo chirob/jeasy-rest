@@ -21,7 +21,7 @@ public class ResourceTest extends BaseTest {
         new Source("Hello, Resource!").writeTo(target);
         IOUtils.write(target.getReader(), true, out, true);
     }
-/*
+
     @Test
     public void test2() throws IOException {
         Resource resource = Resource.getResource("/test/services/echo");
@@ -119,5 +119,5 @@ public class ResourceTest extends BaseTest {
         new Source("Hello, Resource!").writeTo(target);
         IOUtils.write(target.getReader(), true, out, true);
     }
-*/
+
 }

@@ -3,6 +3,7 @@ package com.github.chirob.jeasyrest.core;
 import java.io.IOException;
 import java.net.URI;
 import java.security.AccessController;
+import java.util.Arrays;
 
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.core.security.ResourcePermission;
@@ -15,14 +16,14 @@ public abstract class Resource {
 
     public static final Resource getResource(String resourcePath) {
         Resource resource = RESOURCE_MAP.get(resourcePath);
-        AccessController.checkPermission(new ResourcePermission(resource));
+        AccessController.checkPermission(new ResourcePermission(resource.pathPattern));
         return resource;
     }
 
     public abstract Channel openChannel(Method method) throws IOException;
 
     public final Channel getChannel(Method method) throws IOException {
-        AccessController.checkPermission(new ResourcePermission(this, method));
+        AccessController.checkPermission(new ResourcePermission(pathPattern, null, Arrays.asList(method)));
         return openChannel(method);
     }
 
@@ -62,7 +63,12 @@ public abstract class Resource {
         return path;
     }
 
+    public final String getPathPattern() {
+        return pathPattern;
+    }
+
     URI path;
+    String pathPattern;
     String[] parameters;
 
     private static final ResourceMap RESOURCE_MAP = new ResourceMap();

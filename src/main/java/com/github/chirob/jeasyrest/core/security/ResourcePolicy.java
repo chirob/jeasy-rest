@@ -6,6 +6,13 @@ import java.security.PermissionCollection;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.Provider;
+import java.security.SecurityPermission;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.security.auth.AuthPermission;
 
 public class ResourcePolicy extends Policy {
 
@@ -13,7 +20,7 @@ public class ResourcePolicy extends Policy {
 
     public static void initialize() {
     }
-    
+
     @Override
     public Provider getProvider() {
         return defaultPolicy.getProvider();
@@ -42,10 +49,16 @@ public class ResourcePolicy extends Policy {
     @Override
     public boolean implies(ProtectionDomain domain, Permission permission) {
         if (permission instanceof ResourcePermission) {
-            return defaultPolicy.implies(domain, permission);
-        } else {
-            return defaultPolicy.implies(domain, permission);
+            for (ResourcePermission rp : resourcePermissions) {
+                if (rp.implies(permission)) {
+                    return true;
+                }
+            }
         }
+        if (grantedSecurityPermissions.contains(permission)) {
+            return true;
+        }
+        return defaultPolicy.implies(domain, permission);
     }
 
     @Override
@@ -59,9 +72,13 @@ public class ResourcePolicy extends Policy {
             Policy.setPolicy(this);
             System.setSecurityManager(new SecurityManager());
         }
+        resourcePermissions = new HashSet<ResourcePermission>();
+        grantedSecurityPermissions = Arrays.asList(new SecurityPermission("setPolicy"),
+                new AuthPermission("getSubject"));
     }
 
     private Policy defaultPolicy;
-    
-    
+    private Set<ResourcePermission> resourcePermissions;
+    private List<? extends Permission> grantedSecurityPermissions;
+
 }
