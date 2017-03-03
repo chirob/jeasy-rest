@@ -8,17 +8,20 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.chirob.jeasyrest.io.util.IOUtils;
+import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
 
 public class Source {
 
     public Source(Object sourceObject, Object... sourceParams) throws IOException {
-        Set<Class<? extends StreamHandler>> streamHandlerTypes = HANDLER_MAP.get(sourceObject.getClass());
-        if (streamHandlerTypes.isEmpty()) {
+        HANDLER_MAP.getNewInstance(sourceObject.getClass().getName());
+        Set<InstanceConstructor<? extends StreamHandler>> streamHandlerConstructors = HANDLER_MAP
+                .get(sourceObject.getClass());
+        if (streamHandlerConstructors.isEmpty()) {
             throw new IllegalArgumentException("No stream handler found for type: " + sourceObject.getClass());
         }
-        for (Class<? extends StreamHandler> streamHandlerType : streamHandlerTypes) {
+        for (InstanceConstructor<? extends StreamHandler> streamHandlerConstructor : streamHandlerConstructors) {
             try {
-                StreamHandler streamHandler = streamHandlerType.newInstance();
+                StreamHandler streamHandler = streamHandlerConstructor.newInstance();
                 streamHandler.init(sourceObject, sourceParams);
                 streamHandlers.add(streamHandler);
             } catch (Exception e) {
@@ -42,7 +45,7 @@ public class Source {
         } catch (Exception ex) {
             e = ex;
         }
-        return IOUtils.throwIOException(e);        
+        return IOUtils.throwIOException(e);
     }
 
     public Writer getWriter() throws IOException {
@@ -54,11 +57,11 @@ public class Source {
         } catch (Exception ex) {
             e = ex;
         }
-        return IOUtils.throwIOException(e);        
+        return IOUtils.throwIOException(e);
     }
 
     private List<StreamHandler> streamHandlers = new LinkedList<StreamHandler>();
-    
+
     private static final StreamHandlerMap HANDLER_MAP = new StreamHandlerMap();
-    
+
 }

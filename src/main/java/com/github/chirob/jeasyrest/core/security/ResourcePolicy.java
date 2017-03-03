@@ -1,48 +1,31 @@
 package com.github.chirob.jeasyrest.core.security;
 
-import java.security.CodeSource;
 import java.security.Permission;
-import java.security.PermissionCollection;
 import java.security.Policy;
 import java.security.ProtectionDomain;
-import java.security.Provider;
+import java.security.SecurityPermission;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ResourcePolicy extends Policy {
 
-    public static final ResourcePolicy INSTANCE = new ResourcePolicy();
+    private static final List<? extends Permission> DENY_PERMISSIONS = Arrays
+            .asList(new RuntimePermission("setSecurityManager"), new SecurityPermission("setPolicy"));
 
     public static void initialize() {
-    }
-
-    @Override
-    public Provider getProvider() {
-        return super.getProvider();
-    }
-
-    @Override
-    public String getType() {
-        return super.getType();
-    }
-
-    @Override
-    public Parameters getParameters() {
-        return super.getParameters();
-    }
-
-    @Override
-    public PermissionCollection getPermissions(CodeSource codesource) {
-        return super.getPermissions(codesource);
-    }
-
-    @Override
-    public PermissionCollection getPermissions(ProtectionDomain domain) {
-        return super.getPermissions(domain);
+        synchronized (Policy.class) {
+            Policy.setPolicy(new ResourcePolicy());
+            System.setSecurityManager(new SecurityManager());
+        }
     }
 
     @Override
     public boolean implies(ProtectionDomain domain, Permission permission) {
+        if (DENY_PERMISSIONS.contains(permission)) {
+            return false;
+        }
         Set<Permission> allPermissions = permissionStore.getAllPermissions();
         for (Permission p : allPermissions) {
             if (p.implies(permission)) {
@@ -52,20 +35,7 @@ public class ResourcePolicy extends Policy {
         return !(permission instanceof ResourcePermission);
     }
 
-    @Override
-    public void refresh() {
-        super.refresh();
-    }
-
     private ResourcePolicy() {
-        synchronized (Policy.class) {
-            Policy.setPolicy(this);
-            System.setSecurityManager(new SecurityManager());
-        }
-        // grantedPermissions = Arrays.asList(new AuthPermission("getSubject"));
-        //// new AuthPermission("getSubject"),
-        //// new RuntimePermission("accessDeclaredMembers"), new
-        // FilePermission("<<ALL FILES>>", "read,write"));
     }
 
     private PermissionStore permissionStore = new PermissionStore() {
