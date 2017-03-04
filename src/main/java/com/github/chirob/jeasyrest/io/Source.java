@@ -3,6 +3,7 @@ package com.github.chirob.jeasyrest.io;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.chirob.jeasyrest.io.util.IOUtils;
@@ -57,15 +58,19 @@ public class Source {
     }
 
     protected void init(Object sourceObject, Object... sourceParams) throws IOException {
+        Exception exception = null;
         streamHandlers = HANDLER_MAP.get(sourceObject.getClass());
-        for (StreamHandler streamHandler : streamHandlers) {
+        for (Iterator<? extends StreamHandler> it = streamHandlers.iterator(); it.hasNext();) {
             try {
-                streamHandler.init(sourceObject, sourceParams);
+                it.next().init(sourceObject, sourceParams);
             } catch (Exception e) {
+                it.remove();
+                exception = e;
             }
         }
         if (streamHandlers.isEmpty()) {
-            throw new IllegalArgumentException("No stream handler found for type: " + sourceObject.getClass());
+            throw new IllegalArgumentException("No stream handler found for type: " + sourceObject.getClass(),
+                    exception);
         }
     }
 
