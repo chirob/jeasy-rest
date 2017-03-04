@@ -7,7 +7,6 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import com.github.chirob.jeasyrest.io.Source;
-import com.github.chirob.jeasyrest.io.util.IOUtils;
 import com.github.chirob.jeasyrest.test.BaseTest;
 
 public class InputStreamTest extends BaseTest {
@@ -21,7 +20,7 @@ public class InputStreamTest extends BaseTest {
         String filePath = getClass().getResource("/META-INF/jeasyrest/stream.handlers").getPath();
         InputStream inputStream = new FileInputStream(filePath);
         Source source = new Source(inputStream, "utf8");
-        IOUtils.write(source.getReader(), true, out, true);
+        source.writeTo(out);
     }
 
     
@@ -29,7 +28,7 @@ public class InputStreamTest extends BaseTest {
         String filePath = getClass().getResource("/META-INF/jeasyrest/stream.handlers").getPath();
         InputStream inputStream = new FileInputStream(filePath);
         Source source = new Source(inputStream, "utf8");
-        source.writeTo(new Source(out, "utf8"));
+        source.writeTo(out, "utf8");
     }
 
 }

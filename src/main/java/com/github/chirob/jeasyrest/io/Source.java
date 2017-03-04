@@ -14,11 +14,19 @@ public class Source {
     }
 
     public void writeTo(Object sourceObject, Object... sourceParams) throws IOException {
-        writeTo(new Source(sourceObject, sourceParams));
+        writeTo(sourceObject, true, sourceParams);
     }
 
     public void writeTo(Source target) throws IOException {
-        IOUtils.write(getReader(), true, target.getWriter(), true);
+        writeTo(target, true);
+    }
+
+    public void writeTo(Object sourceObject, boolean closeTarget, Object... sourceParams) throws IOException {
+        writeTo(new Source(sourceObject, sourceParams), closeTarget);
+    }
+
+    public void writeTo(Source target, boolean closeTarget) throws IOException {
+        IOUtils.write(getReader(), true, target.getWriter(), closeTarget);
     }
 
     public Reader getReader() throws IOException {
