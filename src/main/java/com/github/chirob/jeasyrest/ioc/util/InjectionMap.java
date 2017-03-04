@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.ioc;
+package com.github.chirob.jeasyrest.ioc.util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,25 +20,30 @@ public class InjectionMap {
 
     private static final Logger logger = LoggerFactory.getLogger(InjectionMap.class);
 
-    public InjectionMap() {
+    public <T> T singleton(String id, Object... initArgs) {
+        List<T> singletons = singletons(id, initArgs);
+        if (singletons.isEmpty()) {
+            throw new IllegalArgumentException("Cannot retrieve singleton instance by identifier: \"" + id + "\"");
+        } else {
+            return (T) singletons.get(0);
+        }
     }
 
-    public InjectionMap(String... mapNames) {
+    public <T> T newInstance(String id, Object... initArgs) {
+        List<T> newInstances = newInstances(id, initArgs);
+        if (newInstances.isEmpty()) {
+            throw new IllegalArgumentException("Cannot retrieve new instance by identifier: \"" + id + "\"");
+        } else {
+            return (T) newInstances.get(0);
+        }
+    }
+
+    protected InjectionMap(String... mapNames) {
         init(mapNames);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T singleton(String id, Object... initArgs) {
-        return (T) singletons(id, initArgs).get(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T newInstance(String id, Object... initArgs) {
-        return (T) newInstances(id, initArgs).get(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> List<T> singletons(String id, Object... initArgs) {
+    protected <T> List<T> singletons(String id, Object... initArgs) {
         List<T> singletonList = (List<T>) singletons.get(id);
         if (singletonList == null) {
             singletonList = new LinkedList<T>();
@@ -47,7 +52,7 @@ public class InjectionMap {
         return singletonList;
     }
 
-    public <T> List<T> newInstances(String id, Object... initArgs) {
+    protected <T> List<T> newInstances(String id, Object... initArgs) {
         return newInstances(id, injectors.get(id), initArgs);
     }
 
@@ -56,11 +61,11 @@ public class InjectionMap {
         List<T> newInstanceList = new LinkedList<T>();
         for (InstanceConstructor<?> constr : constrList) {
             try {
-                logger.debug("Tryinh to construct object identifyed by \"" + id + "\"");
+                logger.trace("Trying to construct object identifyed by \"" + id + "\"");
                 newInstanceList.add((T) constr.newInstance(initArgs));
-                logger.debug("Construction object succeed");
+                logger.trace("Construction object succeed");
             } catch (Exception e) {
-                logger.debug("Construction object failed");
+                logger.trace("Construction object failed");
             }
         }
         return newInstanceList;

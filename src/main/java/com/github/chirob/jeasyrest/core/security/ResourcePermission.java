@@ -44,9 +44,11 @@ public final class ResourcePermission extends Permission {
                         return false;
                     } else {
                         Set<Principal> subjectPrincipals = subject.getPrincipals();
+                        boolean hasPrincipal = subjectPrincipals.isEmpty();
                         for (Principal principal : subjectPrincipals) {
-                            implies = implies || principals.contains(principal);
+                            hasPrincipal = hasPrincipal || principals.contains(principal);
                         }
+                        implies = hasPrincipal;
                     }
                 }
                 if (implies) {
@@ -102,7 +104,7 @@ public final class ResourcePermission extends Permission {
         if (methods == null) {
             return "read";
         } else {
-            if (methods.contains(Method.DELETE) || methods.contains(Method.POST) || methods.contains(Method.GET)) {
+            if (methods.contains(Method.DELETE) || methods.contains(Method.POST) || methods.contains(Method.PUT)) {
                 return "read,write";
             } else {
                 return "read";

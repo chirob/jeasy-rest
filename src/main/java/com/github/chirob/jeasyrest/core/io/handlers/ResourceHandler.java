@@ -9,7 +9,7 @@ public class ResourceHandler extends ChannelHandler {
 
     @Override
     public void init(Object sourceObject, Object... sourceParams) throws IOException {
-        super.init(((Resource) sourceObject).getChannel(getMethod(sourceParams)), sourceParams);
+        super.init(((Resource) sourceObject).getChannel(getMethod(sourceParams)));
     }
 
     private static Method getMethod(Object... sourceParams) {

@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 
 import com.github.chirob.jeasyrest.core.security.ResourcePolicy;
-import com.github.chirob.jeasyrest.ioc.InjectionMap;
+import com.github.chirob.jeasyrest.ioc.util.InjectionMap;
 
 class ResourceMap extends InjectionMap {
 

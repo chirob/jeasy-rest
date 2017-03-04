@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.chirob.jeasyrest.ioc.InjectionMap;
+import com.github.chirob.jeasyrest.ioc.util.InjectionMap;
 import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
 import com.github.chirob.jeasyrest.reflect.TypeHierarchy;
 
@@ -36,10 +36,9 @@ class StreamHandlerMap extends InjectionMap {
     }
 
     StreamHandlerMap() {
-        instanceHandlerMap = new HashMap<Class<?>, List<InstanceConstructor<?>>>();
-        init("META-INF/jeasyrest/stream.handlers", "jeasyrest/stream.handlers");
+        super("META-INF/jeasyrest/stream.handlers", "jeasyrest/stream.handlers");
     }
 
-    private Map<Class<?>, List<InstanceConstructor<?>>> instanceHandlerMap;
+    private Map<Class<?>, List<InstanceConstructor<?>>> instanceHandlerMap = new HashMap<Class<?>, List<InstanceConstructor<?>>>();;
 
 }

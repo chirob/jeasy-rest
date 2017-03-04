@@ -1,1 +1,1 @@
-/test/services/echo=;read
+/test/services/echo=TEST:geta,post

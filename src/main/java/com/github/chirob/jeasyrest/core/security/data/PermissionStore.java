@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.core.security;
+package com.github.chirob.jeasyrest.core.security.data;
 
 import java.security.Permission;
 import java.util.Set;

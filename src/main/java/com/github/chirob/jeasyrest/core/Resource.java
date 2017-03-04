@@ -24,7 +24,10 @@ public abstract class Resource {
 
     public final Channel getChannel(Method method) throws IOException {
         AccessController.checkPermission(new ResourcePermission(pathPattern, null, Arrays.asList(method)));
-        return openChannel(method);
+        if (channel == null || channel.isClosed()) {
+            channel = openChannel(method);
+        }
+        return channel;
     }
 
     public final Channel getChannel(String method) throws IOException {
@@ -71,5 +74,7 @@ public abstract class Resource {
     String pathPattern;
     String[] parameters;
 
+    private Channel channel;
+    
     private static final ResourceMap RESOURCE_MAP = new ResourceMap();
 }

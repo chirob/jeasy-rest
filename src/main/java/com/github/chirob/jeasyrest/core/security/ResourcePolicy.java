@@ -5,11 +5,11 @@ import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.SecurityPermission;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.github.chirob.jeasyrest.core.Resource.Method;
+import com.github.chirob.jeasyrest.core.security.data.PermissionStore;
+import com.github.chirob.jeasyrest.ioc.Injections;
 
 public class ResourcePolicy extends Policy {
 
@@ -37,17 +37,8 @@ public class ResourcePolicy extends Policy {
     private ResourcePolicy() {
     }
 
-    private PermissionStore permissionStore = new PermissionStore() {
-        @Override
-        public Set<Permission> getAllPermissions() {
-            Set<Permission> allPermissions = new HashSet<Permission>();
-            allPermissions.add(new ResourcePermission("/test/services/echo",
-                    new HashSet<ResourcePrincipal>(Arrays.asList(new ResourcePrincipal("TEST"))),
-                    new HashSet<Method>()));
-            return allPermissions;
-        }
-    };
-
+    private PermissionStore permissionStore = Injections.INSTANCE.singleton("permissionStore");
+    
     private static final List<? extends Permission> DENY_PERMISSIONS = Arrays
             .asList(new RuntimePermission("setSecurityManager"), new SecurityPermission("setPolicy"));
 
