@@ -1,16 +1,12 @@
 package com.github.chirob.jeasyrest.core.security;
 
 import java.security.AccessController;
-import java.security.DomainCombiner;
 import java.security.Permission;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-import javax.security.auth.SubjectDomainCombiner;
 
 import com.github.chirob.jeasyrest.core.Resource.Method;
 
@@ -25,23 +21,14 @@ public final class ResourcePermission extends Permission {
         this(resourcePath, null, methods);
     }
 
-    public ResourcePermission(String resourcePath, Set<Principal> principals) {
+    public ResourcePermission(String resourcePath, Set<? extends Principal> principals) {
         this(resourcePath, principals, null);
     }
 
-    public ResourcePermission(String resourcePath, Set<Principal> principals, Collection<Method> methods) {
+    public ResourcePermission(String resourcePath, Set<? extends Principal> principals, Collection<Method> methods) {
         super(resourcePath);
-        if (principals == null) {
-            this.principals = currentPrincipals();
-        } else {
-            this.principals = principals;
-        }
-
-        if (principals == null) {
-            this.methods = Arrays.asList(Method.values());
-        } else {
-            this.methods = methods;
-        }
+        this.principals = principals;
+        this.methods = methods;
         actions = getMethodActions(methods);
 
     }
@@ -51,19 +38,22 @@ public final class ResourcePermission extends Permission {
         if (permission instanceof ResourcePermission) {
             boolean implies = getName().equals(permission.getName());
             if (implies) {
-                Subject subject = null;
-                DomainCombiner dc = AccessController.getContext().getDomainCombiner();
-                if (dc instanceof SubjectDomainCombiner) {
-                    subject = ((SubjectDomainCombiner) dc).getSubject();
-                }
-                if (subject != null) {
-                    Set<Principal> principals = subject.getPrincipals();
-                    for (Principal principal : principals) {
-                        implies = implies || this.principals.contains(principal);
+                if (!(principals == null || principals.isEmpty())) {
+                    Subject subject = Subject.getSubject(AccessController.getContext());
+                    if (subject == null) {
+                        return false;
+                    } else {
+                        Set<Principal> subjectPrincipals = subject.getPrincipals();
+                        for (Principal principal : subjectPrincipals) {
+                            implies = implies || principals.contains(principal);
+                        }
                     }
                 }
                 if (implies) {
-                    implies = methods.containsAll(((ResourcePermission) permission).methods);
+                    if (!(methods == null || methods.isEmpty())) {
+                        Collection<Method> permissionMethods = ((ResourcePermission) permission).methods;
+                        implies = permissionMethods != null && methods.containsAll(permissionMethods);
+                    }
                 }
             }
             return implies;
@@ -112,7 +102,7 @@ public final class ResourcePermission extends Permission {
         if (methods == null) {
             return "read";
         } else {
-            if (methods.contains(Method.DELETE) || methods.contains(Method.POST) || methods.contains(Method.PUT)) {
+            if (methods.contains(Method.DELETE) || methods.contains(Method.POST) || methods.contains(Method.GET)) {
                 return "read,write";
             } else {
                 return "read";
@@ -120,17 +110,8 @@ public final class ResourcePermission extends Permission {
         }
     }
 
-    private static Set<Principal> currentPrincipals() {
-        Subject subject = Subject.getSubject(AccessController.getContext());
-        if (subject == null) {
-            return new HashSet<Principal>();
-        } else {
-            return subject.getPrincipals();
-        }
-    }
-
     private String actions;
     private Collection<Method> methods;
-    private Set<Principal> principals;
+    private Set<? extends Principal> principals;
 
 }

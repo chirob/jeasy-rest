@@ -9,10 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ResourcePolicy extends Policy {
+import com.github.chirob.jeasyrest.core.Resource.Method;
 
-    private static final List<? extends Permission> DENY_PERMISSIONS = Arrays
-            .asList(new RuntimePermission("setSecurityManager"), new SecurityPermission("setPolicy"));
+public class ResourcePolicy extends Policy {
 
     public static void initialize() {
         synchronized (Policy.class) {
@@ -41,8 +40,15 @@ public class ResourcePolicy extends Policy {
     private PermissionStore permissionStore = new PermissionStore() {
         @Override
         public Set<Permission> getAllPermissions() {
-            return new HashSet<Permission>();
+            Set<Permission> allPermissions = new HashSet<Permission>();
+            allPermissions.add(new ResourcePermission("/test/services/echo",
+                    new HashSet<ResourcePrincipal>(Arrays.asList(new ResourcePrincipal("TEST"))),
+                    new HashSet<Method>()));
+            return allPermissions;
         }
     };
+
+    private static final List<? extends Permission> DENY_PERMISSIONS = Arrays
+            .asList(new RuntimePermission("setSecurityManager"), new SecurityPermission("setPolicy"));
 
 }

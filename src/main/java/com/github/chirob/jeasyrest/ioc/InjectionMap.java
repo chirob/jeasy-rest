@@ -4,14 +4,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.chirob.jeasyrest.io.util.LoadedProperties;
 import com.github.chirob.jeasyrest.reflect.ClassloaderResources;
 import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
 
 public class InjectionMap {
+
+    private static final Logger logger = LoggerFactory.getLogger(InjectionMap.class);
 
     public InjectionMap() {
     }
@@ -20,18 +27,43 @@ public class InjectionMap {
         init(mapNames);
     }
 
-    public <T> T getSingleton(String id) {
-        @SuppressWarnings("unchecked")
-        T singleton = (T) singletons.get(id);
-        if (singleton == null) {
-            singleton = getNewInstance(id);
-        }
-        return singleton;
+    @SuppressWarnings("unchecked")
+    public <T> T singleton(String id, Object... initArgs) {
+        return (T) singletons(id, initArgs).get(0);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getNewInstance(String id) {
-        return (T) injectors.get(id);
+    public <T> T newInstance(String id, Object... initArgs) {
+        return (T) newInstances(id, initArgs).get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> singletons(String id, Object... initArgs) {
+        List<T> singletonList = (List<T>) singletons.get(id);
+        if (singletonList == null) {
+            singletonList = new LinkedList<T>();
+            singletonList.addAll((List<T>) newInstances(id, initArgs));
+        }
+        return singletonList;
+    }
+
+    public <T> List<T> newInstances(String id, Object... initArgs) {
+        return newInstances(id, injectors.get(id), initArgs);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> List<T> newInstances(String id, List<InstanceConstructor<?>> constrList, Object... initArgs) {
+        List<T> newInstanceList = new LinkedList<T>();
+        for (InstanceConstructor<?> constr : constrList) {
+            try {
+                logger.debug("Tryinh to construct object identifyed by \"" + id + "\"");
+                newInstanceList.add((T) constr.newInstance(initArgs));
+                logger.debug("Construction object succeed");
+            } catch (Exception e) {
+                logger.debug("Construction object failed");
+            }
+        }
+        return newInstanceList;
     }
 
     protected void init(String... mapNames) {
@@ -55,13 +87,19 @@ public class InjectionMap {
                         } catch (ClassNotFoundException e) {
                             throw new IllegalArgumentException(e);
                         }
+                        List<InstanceConstructor<?>> objectConstrList = injectors.get(name);
+                        if (objectConstrList == null) {
+                            objectConstrList = new LinkedList<InstanceConstructor<?>>();
+                            injectors.put(name, objectConstrList);
+                        }
                         Object[] initArgs = Arrays.copyOfRange(tokens, 1, tokens.length);
                         try {
                             InstanceConstructor<Object> objectConstr = new InstanceConstructor<Object>(objectType,
                                     initArgs);
-                            injectors.put(name, objectConstr);
+                            objectConstrList.add(objectConstr);
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Cannot create resource '" + name + "'", e);
+                            throw new IllegalArgumentException(
+                                    "Cannot create constructor for \"" + name + "\" identifier'", e);
                         }
                     }
                 }
@@ -69,7 +107,7 @@ public class InjectionMap {
         }
     }
 
-    protected Map<String, InstanceConstructor<Object>> injectors = new HashMap<String, InstanceConstructor<Object>>();
-    protected Map<String, Object> singletons = new HashMap<String, Object>();
+    protected Map<String, List<InstanceConstructor<?>>> injectors = new HashMap<String, List<InstanceConstructor<?>>>();
+    protected Map<String, List<?>> singletons = new HashMap<String, List<?>>();
 
 }

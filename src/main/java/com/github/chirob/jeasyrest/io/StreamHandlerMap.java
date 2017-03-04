@@ -1,11 +1,9 @@
 package com.github.chirob.jeasyrest.io;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.github.chirob.jeasyrest.ioc.InjectionMap;
 import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
@@ -14,34 +12,34 @@ import com.github.chirob.jeasyrest.reflect.TypeHierarchy;
 class StreamHandlerMap extends InjectionMap {
 
     @SuppressWarnings("unchecked")
-    Set<InstanceConstructor<? extends StreamHandler>> get(Class<?> type) {
+    List<? extends StreamHandler> get(Class<?> type) {
         synchronized (this) {
-            Set<InstanceConstructor<? extends StreamHandler>> handlerConstructors = instanceHandlerMap.get(type);
+            List<InstanceConstructor<?>> handlerConstructors = instanceHandlerMap.get(type);
             if (handlerConstructors == null) {
-                handlerConstructors = new HashSet<InstanceConstructor<? extends StreamHandler>>();
+                handlerConstructors = new LinkedList<InstanceConstructor<?>>();
                 TypeHierarchy typeHierarchy = new TypeHierarchy(type);
-                for (Entry<String, InstanceConstructor<Object>> entry : injectors.entrySet()) {
+                for (String id : injectors.keySet()) {
                     Class<? extends StreamHandler> handlerType;
                     try {
-                        handlerType = (Class<? extends StreamHandler>) Class.forName(entry.getKey());
+                        handlerType = (Class<? extends StreamHandler>) Class.forName(id);
                     } catch (ClassNotFoundException e) {
                         throw new IllegalArgumentException(e);
                     }
                     if (typeHierarchy.contains(handlerType)) {
-                        handlerConstructors.add((InstanceConstructor<? extends StreamHandler>) entry.getValue());
+                        handlerConstructors.addAll(injectors.get(id));
                     }
                 }
-                instanceHandlerMap.put(type, Collections.unmodifiableSet(handlerConstructors));
+                instanceHandlerMap.put(type, handlerConstructors);
             }
-            return handlerConstructors;
+            return newInstances(type.getName(), handlerConstructors);
         }
     }
 
     StreamHandlerMap() {
-        instanceHandlerMap = new HashMap<Class<?>, Set<InstanceConstructor<? extends StreamHandler>>>();
-        init("jeasyrest/stream.handlers.override", "jeasyrest/stream.handlers");
+        instanceHandlerMap = new HashMap<Class<?>, List<InstanceConstructor<?>>>();
+        init("META-INF/jeasyrest/stream.handlers", "jeasyrest/stream.handlers");
     }
 
-    private Map<Class<?>, Set<InstanceConstructor<? extends StreamHandler>>> instanceHandlerMap;
+    private Map<Class<?>, List<InstanceConstructor<?>>> instanceHandlerMap;
 
 }

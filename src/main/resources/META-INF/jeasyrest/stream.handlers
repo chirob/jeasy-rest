@@ -11,4 +11,5 @@ javax.activation.DataSource=com.github.chirob.jeasyrest.io.handlers.DataSourceHa
 java.sql.Blob=com.github.chirob.jeasyrest.io.handlers.BlobHandler
 java.sql.Clob=com.github.chirob.jeasyrest.io.handlers.ClobHandler
 
+com.github.chirob.jeasyrest.core.io.Channel=com.github.chirob.jeasyrest.core.io.handlers.ChannelHandler
 com.github.chirob.jeasyrest.core.Resource=com.github.chirob.jeasyrest.core.io.handlers.ResourceHandler

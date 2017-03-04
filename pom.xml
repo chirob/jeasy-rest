@@ -39,16 +39,27 @@
 	</build>
 
 	<dependencies>
+		<!-- compile dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
+			<version>1.7.22</version>
 		</dependency>
+		<!-- -->
+
+		<!-- test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- -->
 	</dependencies>
 </project>
