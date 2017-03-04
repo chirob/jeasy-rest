@@ -1,1 +1,2 @@
-/test/services/echo=TEST:geta,post
+/test/services/echo=TEST:get,post
+#/test/services/echo=serf:

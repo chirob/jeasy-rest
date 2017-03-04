@@ -4,6 +4,7 @@ import java.security.AccessController;
 import java.security.Permission;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -27,8 +28,15 @@ public final class ResourcePermission extends Permission {
 
     public ResourcePermission(String resourcePath, Set<? extends Principal> principals, Collection<Method> methods) {
         super(resourcePath);
-        this.principals = principals;
-        this.methods = methods;
+        if (resourcePath == null || resourcePath.trim().length() == 0) {
+            throw new IllegalArgumentException("Invalid empty resource path");
+        }
+        if (principals != null) {
+            this.principals = Collections.unmodifiableSet(principals);
+        }
+        if (methods != null) {
+            this.methods = Collections.unmodifiableCollection(methods);
+        }
         actions = getMethodActions(methods);
 
     }
@@ -54,7 +62,7 @@ public final class ResourcePermission extends Permission {
                 if (implies) {
                     if (!(methods == null || methods.isEmpty())) {
                         Collection<Method> permissionMethods = ((ResourcePermission) permission).methods;
-                        implies = permissionMethods != null && methods.containsAll(permissionMethods);
+                        implies = permissionMethods == null || methods.containsAll(permissionMethods);
                     }
                 }
             }

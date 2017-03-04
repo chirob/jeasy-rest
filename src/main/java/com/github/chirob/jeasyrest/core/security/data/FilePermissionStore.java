@@ -2,26 +2,17 @@ package com.github.chirob.jeasyrest.core.security.data;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.Permission;
-import java.security.Principal;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import com.github.chirob.jeasyrest.core.Resource.Method;
-import com.github.chirob.jeasyrest.core.security.ResourcePermission;
-import com.github.chirob.jeasyrest.core.security.ResourcePrincipal;
 import com.github.chirob.jeasyrest.io.util.LoadedProperties;
 import com.github.chirob.jeasyrest.reflect.ClassloaderResources;
 
-public class FilePermissionStore implements PermissionStore {
-
-    @Override
-    public Set<Permission> getAllPermissions() {
-        return allPermissions;
-    }
+public class FilePermissionStore extends GenericPermissionStore {
 
     public FilePermissionStore() {
+        List<PermissionRecord> permissionRecords = new LinkedList<PermissionRecord>();
         LoadedProperties resourceProps = null;
         for (String mapName : MAP_NAMES) {
             ClassloaderResources resources = new ClassloaderResources(mapName);
@@ -32,39 +23,33 @@ public class FilePermissionStore implements PermissionStore {
                     throw new RuntimeException(e);
                 }
                 for (Entry<Object, Object> entry : resourceProps.entrySet()) {
+                    List<PrincipalRecord> principalRecords = new LinkedList<PrincipalRecord>();
                     String resourcePath = ((String) entry.getKey()).trim();
                     String values = ((String) entry.getValue()).trim();
-                    if (values == null || values.trim().length() == 0) {
-                        allPermissions.add(new ResourcePermission(resourcePath));
-                    } else {
+                    if (values != null && values.trim().length() != 0) {
+                        String principalName = null;
+                        String[] methodNames = null;
                         String[] tokens = values.split(";");
-                        if (tokens.length > 0) {
+                        if (tokens.length != 0) {
                             for (String token : tokens) {
                                 String[] subtokens = token.split(":");
                                 if (subtokens.length > 0) {
-                                    Set<Principal> principalSet = new HashSet<Principal>();
-                                    Set<Method> methodSet = new HashSet<Method>();
-                                    String principalName = subtokens[0].trim();
-                                    if (principalName.length() != 0) {
-                                        principalSet.add(new ResourcePrincipal(principalName));
-                                    }
+                                    principalName = subtokens[0].trim();
                                     if (subtokens.length > 1) {
-                                        String[] methodNames = subtokens[1].split(",");
-                                        for (String methodName : methodNames) {
-                                            methodSet.add(Method.valueOf(methodName.toUpperCase()));
-                                        }
+                                        methodNames = subtokens[1].split(",");
                                     }
-                                    allPermissions.add(new ResourcePermission(resourcePath, principalSet, methodSet));
+                                    principalRecords.add(new PrincipalRecord(principalName, methodNames));
                                 }
                             }
                         }
                     }
+                    permissionRecords.add(new PermissionRecord(resourcePath, principalRecords));
                 }
             }
         }
-    }
 
-    private Set<Permission> allPermissions = new HashSet<Permission>();
+        init(permissionRecords);
+    }
 
     private static final String[] MAP_NAMES = { "META_INF/jeasyrest/resources.policy", "jeasyrest/resources.policy" };
 }
