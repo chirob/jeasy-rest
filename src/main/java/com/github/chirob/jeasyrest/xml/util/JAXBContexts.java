@@ -11,16 +11,14 @@ public class JAXBContexts {
     public static final JAXBContext get(Object key) {
         JAXBContext context = JAXB_CONTEXTS.get(key);
         if (context == null) {
-            String contextPath = null;
-            if (key instanceof CharSequence) {
-                contextPath = key.toString();
-            } else if (key instanceof Class) {
-                contextPath = ((Class<?>) key).getName();
-            } else {
-                contextPath = key.getClass().getName();
-            }
             try {
-                context = JAXBContext.newInstance(contextPath);
+                if (key instanceof CharSequence) {
+                    context = JAXBContext.newInstance(key.toString());
+                } else if (key instanceof Class) {
+                    context = JAXBContext.newInstance((Class<?>) key);
+                } else {
+                    context = JAXBContext.newInstance(key.getClass().getName());
+                }
             } catch (JAXBException e) {
                 throw new IllegalArgumentException(e);
             }

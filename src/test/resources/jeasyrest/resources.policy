@@ -1,2 +1,3 @@
 /test/services/echo=TEST:get,post
 #/test/services/echo=serf:
+/test/services/xml/jaxb/echo=TEST:get,post

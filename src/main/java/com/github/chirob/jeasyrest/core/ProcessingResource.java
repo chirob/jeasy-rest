@@ -17,17 +17,18 @@ public abstract class ProcessingResource extends Resource {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessingResource.class);
 
-    protected abstract void process(Reader reader, Writer writer) throws IOException;
+    public abstract void process(Reader reader, Writer writer) throws IOException;
 
     @Override
     public final Channel openChannel(Method method) throws IOException {
         final PipeChannel channel = new PipeChannel();
-
+        final Reader reader = channel.getPipedReader();
+        final Writer writer = channel.getPipedWriter();
         ThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    process(channel.preaderIn, channel.pwriterOut);
+                    process(reader, writer);
                 } catch (Throwable t) {
                     logger.error("Resource processing error", t);
                 } finally {
@@ -42,15 +43,15 @@ public abstract class ProcessingResource extends Resource {
     private static final class PipeChannel implements Channel {
         @Override
         public void close() {
-            IOUtils.close(preaderOut, pwriterIn);
+            IOUtils.close(pwriterIn, preaderOut);
+            pwriterIn = null;            
             preaderOut = null;
-            pwriterIn = null;
         }
 
         @Override
         public Reader getReader() throws IOException {
             PipeChannel.this.close();
-            return preaderOut = new PipedReader() {
+            return preaderOut = new PipedReader(pwriterOut) {
                 @Override
                 public synchronized int read() throws IOException {
                     return checkEOF(super.read());
@@ -96,6 +97,19 @@ public abstract class ProcessingResource extends Resource {
         @Override
         public boolean isClosed() {
             return preaderOut == null && pwriterIn == null;
+        }
+
+        private Reader getPipedReader() throws IOException {
+            return preaderIn = new PipedReader();
+        }
+
+        private Writer getPipedWriter() throws IOException {
+            return pwriterOut = new PipedWriter();
+        }
+        
+        private PipeChannel() {
+            preaderIn = new PipedReader();
+            pwriterOut = new PipedWriter();
         }
 
         private PipedReader preaderIn;

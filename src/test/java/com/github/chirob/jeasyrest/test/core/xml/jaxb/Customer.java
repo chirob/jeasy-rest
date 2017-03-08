@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.test.core.xml;
+package com.github.chirob.jeasyrest.test.core.xml.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.test.core.io.handlers;
+package com.github.chirob.jeasyrest.test.core;
 
 import java.io.IOException;
 
@@ -8,7 +8,6 @@ import com.github.chirob.jeasyrest.core.Resource;
 import com.github.chirob.jeasyrest.core.Resource.Method;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.io.Source;
-import com.github.chirob.jeasyrest.test.core.AuthCoreTest;
 
 public class EchoResourceTest extends AuthCoreTest {
 
