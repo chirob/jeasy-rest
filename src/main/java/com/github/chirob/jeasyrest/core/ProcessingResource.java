@@ -21,101 +21,63 @@ public abstract class ProcessingResource extends Resource {
 
     @Override
     public final Channel openChannel(Method method) throws IOException {
-        final PipeChannel channel = new PipeChannel();
-        final Reader reader = channel.getPipedReader();
-        final Writer writer = channel.getPipedWriter();
-        ThreadExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    process(reader, writer);
-                } catch (Throwable t) {
-                    logger.error("Resource processing error", t);
-                } finally {
-                    IOUtils.close(channel.preaderIn, channel.pwriterOut);
-                }
-            }
-        });
-
-        return channel;
+        return new PipeChannel(this);
     }
 
     private static final class PipeChannel implements Channel {
         @Override
         public void close() {
-            IOUtils.close(pwriterIn, preaderOut);
-            pwriterIn = null;            
-            preaderOut = null;
+            closeStreams();
+            resource = null;
         }
 
         @Override
         public Reader getReader() throws IOException {
-            PipeChannel.this.close();
-            return preaderOut = new PipedReader(pwriterOut) {
-                @Override
-                public synchronized int read() throws IOException {
-                    return checkEOF(super.read());
-                }
-
-                @Override
-                public synchronized int read(char[] cbuf, int off, int len) throws IOException {
-                    return checkEOF(super.read(cbuf, off, len));
-                }
-
-                @Override
-                public int read(char[] cbuf) throws IOException {
-                    return checkEOF(super.read(cbuf));
-                }
-
-                private int checkEOF(int rv) throws IOException {
-                    if (rv == -1) {
-                        close();
-                    }
-                    return rv;
-                }
-
-                @Override
-                public void close() throws IOException {
-                    preaderOut = null;
-                    super.close();
-                }
-            };
+            return preaderOut;
         }
 
         @Override
         public Writer getWriter() throws IOException {
-            PipeChannel.this.close();
-            return pwriterIn = new PipedWriter(preaderIn) {
+            pwriterOut = new PipedWriter();
+            preaderOut = new PipedReader(pwriterOut);
+            preaderIn = new PipedReader();
+            pwriterIn = new PipedWriter(preaderIn);
+
+            ThreadExecutor.execute(new Runnable() {
                 @Override
-                public void close() throws IOException {
-                    pwriterIn = null;
-                    super.close();
+                public void run() {
+                    try {
+                        resource.process(preaderIn, pwriterOut);
+                    } catch (Throwable t) {
+                        logger.error("Resource processing error", t);
+                    } finally {
+                        closeStreams();
+                    }
                 }
-            };
+            });
+
+            return pwriterIn;
         }
 
         @Override
         public boolean isClosed() {
-            return preaderOut == null && pwriterIn == null;
+            return resource == null;
         }
 
-        private Reader getPipedReader() throws IOException {
-            return preaderIn = new PipedReader();
+        private PipeChannel(ProcessingResource resource) {
+            this.resource = resource;
         }
 
-        private Writer getPipedWriter() throws IOException {
-            return pwriterOut = new PipedWriter();
-        }
-        
-        private PipeChannel() {
-            preaderIn = new PipedReader();
-            pwriterOut = new PipedWriter();
+        private void closeStreams() {
+            IOUtils.close(pwriterIn, pwriterOut);
         }
 
         private PipedReader preaderIn;
         private PipedWriter pwriterIn;
         private PipedReader preaderOut;
         private PipedWriter pwriterOut;
+
+        private ProcessingResource resource;
     }
 
 }
