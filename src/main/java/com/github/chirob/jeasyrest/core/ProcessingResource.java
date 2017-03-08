@@ -28,12 +28,13 @@ public abstract class ProcessingResource extends Resource {
             @Override
             public void run() {
                 try {
-                    process(reader, writer);
+                    while (!channel.isClosed()) {
+                        process(reader, writer);
+                    }
                 } catch (Throwable t) {
                     logger.error("Resource processing error", t);
-                } finally {
                     IOUtils.close(channel.preaderIn, channel.pwriterOut);
-                }
+                } 
             }
         });
 
