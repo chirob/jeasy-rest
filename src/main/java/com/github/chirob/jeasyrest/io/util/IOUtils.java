@@ -46,6 +46,7 @@ public class IOUtils {
             while ((len = in.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
+            out.flush();
         } catch (Exception e) {
             closeIn = true;
             closeOut = true;

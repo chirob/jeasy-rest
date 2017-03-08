@@ -2,36 +2,38 @@ package com.github.chirob.jeasyrest.core;
 
 import java.io.IOException;
 import java.net.URI;
-import java.security.AccessController;
 import java.util.Arrays;
 
 import com.github.chirob.jeasyrest.core.io.Channel;
-import com.github.chirob.jeasyrest.core.security.ResourcePermission;
+import com.github.chirob.jeasyrest.core.security.ResourcePolicy;
+import com.github.chirob.jeasyrest.ioc.Injections;
 
 public abstract class Resource {
 
     public enum Method {
-        DELETE, GET, OPTIONS, POST, PUT
+        DELETE, GET, OPTIONS, PATCH, POST, PUT
     }
 
-    public static final Resource getResource(String resourcePath) {
-        Resource resource = RESOURCE_MAP.get(resourcePath);
-        AccessController.checkPermission(new ResourcePermission(resource.pathPattern));
+    public static final <T extends Resource> T getResource(String resourcePath) {
+        T resource = RESOURCE_MAP.get(resourcePath);
+        if (resource == null) {
+            resource = Injections.INSTANCE.newInstance("remoteResource", resourcePath);
+        }
         return resource;
     }
 
     public abstract Channel openChannel(Method method) throws IOException;
 
     public final Channel getChannel(Method method) throws IOException {
-        AccessController.checkPermission(new ResourcePermission(pathPattern, null, Arrays.asList(method)));
+        ResourcePolicy.checkPermission(pathPattern, Arrays.asList(method));
         if (channel == null || channel.isClosed()) {
             channel = openChannel(method);
         }
         return channel;
     }
 
-    public final Channel getChannel(String method) throws IOException {
-        return getChannel(Method.valueOf(method.toUpperCase()));
+    public final Channel getChannel(String methodName) throws IOException {
+        return getChannel(Method.valueOf(methodName.toUpperCase()));
     }
 
     public final Channel delete() throws IOException {
@@ -44,6 +46,10 @@ public abstract class Resource {
 
     public final Channel options() throws IOException {
         return getChannel(Method.OPTIONS);
+    }
+
+    public final Channel patch() throws IOException {
+        return getChannel(Method.PATCH);
     }
 
     public final Channel post() throws IOException {
@@ -70,11 +76,20 @@ public abstract class Resource {
         return pathPattern;
     }
 
+    void init(URI path, String pathPattern, Object[] parameters) {
+        ResourcePolicy.checkPermission(pathPattern);
+
+        this.path = path;
+        this.pathPattern = pathPattern;
+        parameters = Arrays.copyOf(parameters, parameters.length, String[].class);
+    }
+
     URI path;
     String pathPattern;
     String[] parameters;
 
     private Channel channel;
-    
+
     private static final ResourceMap RESOURCE_MAP = new ResourceMap();
+
 }

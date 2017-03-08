@@ -13,8 +13,13 @@ import com.github.chirob.jeasyrest.test.core.AuthCoreTest;
 public class EchoResourceTest extends AuthCoreTest {
 
     @Test
-    public void run() {
-        super.run();
+    public void runWithAuthentication() {
+        run(true);
+    }
+
+    @Test
+    public void runWithoutAuthentication() {
+        run(false);
     }
 
     public void test1() throws IOException {

@@ -9,24 +9,21 @@ import com.github.chirob.jeasyrest.ioc.util.InjectionMap;
 
 class ResourceMap extends InjectionMap {
 
-    Resource get(String resourcePath) {
+    <T extends Resource> T get(String resourcePath) {
         for (String id : injectors.keySet()) {
             MessageFormat pathFormat = new MessageFormat(id);
             String pathPattern = pathFormat.toPattern().replaceAll("\\{\\d+\\}", ".+");
             if (resourcePath.matches(pathPattern)) {
-                Object[] params;
+                URI resPath = URI.create(resourcePath);
+                String resPathPattern = pathPattern;
+                Object[] resParameters;
                 try {
-                    params = pathFormat.parse(resourcePath);
+                    resParameters = pathFormat.parse(resourcePath);
                 } catch (ParseException e) {
                     throw new IllegalArgumentException(e);
                 }
-                Resource resource = (Resource) newInstance(id);
-                resource.path = URI.create(resourcePath);
-                resource.pathPattern = pathPattern;
-                resource.parameters = new String[params.length];
-                for (int i = 0; i < params.length; i++) {
-                    resource.setParameter(i, params[i].toString());
-                }
+                T resource = newInstance(id);
+                resource.init(resPath, resPathPattern, resParameters);
                 return resource;
             }
         }

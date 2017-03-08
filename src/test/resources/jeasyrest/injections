@@ -1,1 +1,1 @@
-permissionStore=com.github.chirob.jeasyrest.core.security.data.FilePermissionStore
+authenticationManager=com.github.chirob.jeasyrest.test.core.TestAuthenticationManager

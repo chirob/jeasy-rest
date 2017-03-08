@@ -1,8 +1,7 @@
 package com.github.chirob.jeasyrest.test;
 
-import java.io.FilterWriter;
+import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -14,17 +13,25 @@ public class BaseTest {
     protected void run() {
         Class<? extends BaseTest> testClass = BaseTest.this.getClass();
         for (Method method : testClass.getMethods()) {
-            if (!"run".equals(method.getName()) && method.getDeclaringClass().equals(testClass)) {
+            if (!method.getName().startsWith("run") && method.getDeclaringClass().equals(testClass)) {
                 try {
                     method.invoke(BaseTest.this);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.getTargetException().printStackTrace(out);
+                    out.flush();
+                } catch (Exception e) {
+                    e.printStackTrace(out);
+                    out.flush();
                 }
             }
         }
     }
 
-    protected Writer out = new FilterWriter(new StringWriter()) {        
+    protected PrintWriter out = new PrintWriter(new StringWriter()) {
+        @Override
+        public void close() {
+        }
+        
         @Override
         public void flush() {
             logger.info(out.toString());

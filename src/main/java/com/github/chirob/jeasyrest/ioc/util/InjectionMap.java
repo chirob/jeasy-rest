@@ -89,7 +89,7 @@ public class InjectionMap {
                         Class<?> objectType;
                         try {
                             objectType = Class.forName((String) tokens[0]);
-                        } catch (ClassNotFoundException e) {
+                        } catch (Exception e) {
                             throw new IllegalArgumentException(e);
                         }
                         List<InstanceConstructor<?>> objectConstrList = injectors.get(name);
