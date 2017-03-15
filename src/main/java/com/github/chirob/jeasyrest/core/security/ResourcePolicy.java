@@ -78,7 +78,7 @@ public class ResourcePolicy extends Policy {
     private final PermissionStore permissionStore;
     private final List<? extends Permission> denyPermissions;
 
-    private static final boolean SECURITY_ENABLED = Configuration.INSTANCES.get("security")
+    private static final boolean SECURITY_ENABLED = Configuration.INSTANCES.get("resources")
             .getBoolean("checkPermission.enabled", false);
 
 }

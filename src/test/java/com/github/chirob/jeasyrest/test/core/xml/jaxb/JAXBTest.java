@@ -1,6 +1,6 @@
 package com.github.chirob.jeasyrest.test.core.xml.jaxb;
 
-import java.io.StringWriter;
+import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
 
@@ -10,16 +10,19 @@ import com.github.chirob.jeasyrest.xml.util.JAXBContexts;
 public class JAXBTest extends AuthCoreTest {
 
     protected Customer prepareObjectRequest() {
-        Customer request = new Customer();
-        request.setId(100);
-        request.setName("mkyong");
-        request.setAge(29);
-        return request;
+        try {
+            return (Customer)JAXBContexts.get(Customer.class).createUnmarshaller().unmarshal(new StringReader(prepareXmlStringRequest()));
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    protected String prepareStringRequest() throws JAXBException {
-        StringWriter sw = new StringWriter();
-        JAXBContexts.get(Customer.class).createMarshaller().marshal(prepareObjectRequest(), sw);
-        return sw.toString();
+    protected String prepareXmlStringRequest() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><customer><id>100</id><name>mkyong</name><age>29</age><address_array/></customer>";
     }
+
+    protected String prepareJsonStringRequest() throws JAXBException {
+        return "{\"id\": 100, \"name\": \"mkyong\", \"age\": 29, \"address_array\": []}";
+    }
+    
 }

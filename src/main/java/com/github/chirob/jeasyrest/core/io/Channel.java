@@ -6,12 +6,12 @@ import java.io.Writer;
 
 public interface Channel {
         
-    void close();
+    void close() throws IOException;
 
     Reader getReader() throws IOException;
 
     Writer getWriter() throws IOException;
     
-    boolean isClosed();
+    boolean isClosed() throws IOException;
     
 }

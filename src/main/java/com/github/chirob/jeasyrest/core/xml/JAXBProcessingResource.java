@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import com.github.chirob.jeasyrest.core.ObjectProcessingResource;
+import com.github.chirob.jeasyrest.core.impl.ObjectProcessingResource;
 import com.github.chirob.jeasyrest.xml.util.JAXBContexts;
 
 public abstract class JAXBProcessingResource<Req, Res> extends ObjectProcessingResource<Req, Res> {

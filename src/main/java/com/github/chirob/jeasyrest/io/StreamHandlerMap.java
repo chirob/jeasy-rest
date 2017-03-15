@@ -11,7 +11,6 @@ import com.github.chirob.jeasyrest.reflect.TypeHierarchy;
 
 class StreamHandlerMap extends InjectionMap {
 
-    @SuppressWarnings("unchecked")
     List<? extends StreamHandler> get(Class<?> type) {
         synchronized (this) {
             List<InstanceConstructor<?>> handlerConstructors = instanceHandlerMap.get(type);
@@ -19,13 +18,13 @@ class StreamHandlerMap extends InjectionMap {
                 handlerConstructors = new LinkedList<InstanceConstructor<?>>();
                 TypeHierarchy typeHierarchy = new TypeHierarchy(type);
                 for (String id : injectors.keySet()) {
-                    Class<? extends StreamHandler> handlerType;
+                    Class<?> c = null;
                     try {
-                        handlerType = (Class<? extends StreamHandler>) Class.forName(id);
+                        c = Class.forName(id);
                     } catch (ClassNotFoundException e) {
                         throw new IllegalArgumentException(e);
                     }
-                    if (typeHierarchy.contains(handlerType)) {
+                    if (typeHierarchy.contains(c)) {
                         handlerConstructors.addAll(injectors.get(id));
                     }
                 }

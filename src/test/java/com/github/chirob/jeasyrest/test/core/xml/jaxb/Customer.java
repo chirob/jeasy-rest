@@ -1,8 +1,11 @@
 package com.github.chirob.jeasyrest.test.core.xml.jaxb;
 
+import java.util.Collection;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -33,10 +36,17 @@ public class Customer {
         this.id = id;
     }
 
+    public Collection<String> getAddress() {
+        return address;
+    }
+
+    public void setAddress(Collection<String> address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
-        return "Customer [name=" + name + ", age=" + age + ", id=" + id + "]";
-
+        return "Customer [id=" + id + ", name=" + name + ", age=" + age + ", address=" + address + "]";
     }
 
     @XmlElement
@@ -45,5 +55,8 @@ public class Customer {
     private String name;
     @XmlElement
     private int age;
+    @XmlElementWrapper(name="address_array")
+    @XmlElement
+    private Collection<String> address;
 
 }

@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.core;
+package com.github.chirob.jeasyrest.core.transform;
 
 import java.io.IOException;
 import java.io.PipedReader;
@@ -6,29 +6,40 @@ import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.chirob.jeasyrest.concurrent.util.ThreadExecutor;
+import com.github.chirob.jeasyrest.core.Resource;
+import com.github.chirob.jeasyrest.core.ResourceWrapper;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.io.util.IOUtils;
 
-public abstract class ProcessingResource extends Resource {
+public class ResourceTranformer extends ResourceWrapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessingResource.class);
+    public ResourceTranformer(String originalPath) {
+        super(originalPath);
+    }
 
-    public abstract void process(Reader reader, Writer writer) throws IOException;
+    public ResourceTranformer(Resource original) {
+        super(original);
+    }
 
     @Override
     public final Channel openChannel(Method method) throws IOException {
-        return new PipeChannel(this);
+        return new PipeChannel(this, super.openChannel(method));
+    }
+
+    protected void transformIn(Reader inputReader, Writer inputWriter) throws IOException {
+        IOUtils.write(inputReader, true, inputWriter, true);
+    }
+
+    protected void transformOut(Reader outputReader, Writer outputWriter) throws IOException {
+        IOUtils.write(outputReader, true, outputWriter, true);
     }
 
     private static final class PipeChannel implements Channel {
         @Override
         public void close() {
             closeStreams();
-            resource = null;
+            transformer = null;
         }
 
         @Override
@@ -47,9 +58,10 @@ public abstract class ProcessingResource extends Resource {
                 @Override
                 public void run() {
                     try {
-                        resource.process(preaderIn, pwriterOut);
+                        transformer.transformIn(preaderIn, channel.getWriter());
+                        transformer.transformOut(channel.getReader(), pwriterOut);
                     } catch (Throwable t) {
-                        logger.error("Resource processing error", t);
+                        throw new RuntimeException("Resource processing error", t);
                     } finally {
                         closeStreams();
                     }
@@ -61,11 +73,12 @@ public abstract class ProcessingResource extends Resource {
 
         @Override
         public boolean isClosed() {
-            return resource == null;
+            return transformer == null;
         }
 
-        private PipeChannel(ProcessingResource resource) {
-            this.resource = resource;
+        private PipeChannel(ResourceTranformer transformer, Channel channel) {
+            this.transformer = transformer;
+            this.channel = channel;
         }
 
         private void closeStreams() {
@@ -77,7 +90,8 @@ public abstract class ProcessingResource extends Resource {
         private PipedReader preaderOut;
         private PipedWriter pwriterOut;
 
-        private ProcessingResource resource;
+        private ResourceTranformer transformer;
+        private Channel channel;
     }
 
 }

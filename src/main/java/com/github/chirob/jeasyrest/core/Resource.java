@@ -27,7 +27,7 @@ public abstract class Resource {
     public final Channel getChannel(Method method) throws IOException {
         ResourcePolicy.checkPermission(pathPattern, Arrays.asList(method));
         if (channel == null || channel.isClosed()) {
-            channel = openChannel(method);
+            channel = new ResourceChannel(openChannel(method));
         }
         return channel;
     }
@@ -81,7 +81,7 @@ public abstract class Resource {
 
         this.path = path;
         this.pathPattern = pathPattern;
-        parameters = Arrays.copyOf(parameters, parameters.length, String[].class);
+        this.parameters = Arrays.copyOf(parameters, parameters.length, String[].class);
     }
 
     URI path;
