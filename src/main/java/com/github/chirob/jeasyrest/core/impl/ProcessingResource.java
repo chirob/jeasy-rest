@@ -8,7 +8,6 @@ import java.io.Writer;
 
 import com.github.chirob.jeasyrest.concurrent.util.ThreadExecutor;
 import com.github.chirob.jeasyrest.core.Resource;
-import com.github.chirob.jeasyrest.core.Resource.Method;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.io.util.IOUtils;
 
