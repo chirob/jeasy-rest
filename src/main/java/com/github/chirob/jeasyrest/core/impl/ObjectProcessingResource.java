@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.core;
+package com.github.chirob.jeasyrest.core.impl;
 
 import java.io.IOException;
 import java.io.Reader;

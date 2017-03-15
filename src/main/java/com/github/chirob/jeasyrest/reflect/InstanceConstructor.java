@@ -16,16 +16,26 @@ public class InstanceConstructor<T> {
         addConstructors(type.getDeclaredConstructors());
         initArgsList = Arrays.asList(initArgs);
     }
+    
+    public boolean handleType(Class<?> type) {
+        for (Constructor<T> c: constructors) {
+            if (c.getDeclaringClass().equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public T newInstance(Object... initArgs) {
         initArgsList.addAll(Arrays.asList(initArgs));
-        Class<?>[] initArgsTypes = getInitArgsTypes(initArgsList.toArray());
+        Object[] allInitArgs = initArgsList.toArray();
+        Class<?>[] initArgsTypes = getInitArgsTypes(allInitArgs);
         Constructor<T> constructor = constructorsMap.get(initArgsTypes);
         if (constructor == null) {
             if (initArgsTypes == null) {
                 for (Constructor<T> c : constructors) {
                     try {
-                        T newInstance = (T) c.newInstance(initArgs);
+                        T newInstance = (T) c.newInstance(allInitArgs);
                         constructorsMap.put(initArgsTypes, c);
                         return newInstance;
                     } catch (Exception e) {
@@ -37,14 +47,14 @@ public class InstanceConstructor<T> {
                     int i = 0;
                     boolean match = true;
                     for (Class<?> initArgsType : initArgsTypes) {
-                        if (!paramTypes[i++].isAssignableFrom(initArgsType)) {
+                        if (i == paramTypes.length || !paramTypes[i++].isAssignableFrom(initArgsType)) {
                             match = false;
                             break;
                         }
                     }
                     if (match) {
                         try {
-                            T newInstance = (T) c.newInstance(initArgs);
+                            T newInstance = (T) c.newInstance(allInitArgs);
                             constructorsMap.put(initArgsTypes, c);
                             return newInstance;
                         } catch (Exception e) {
@@ -61,6 +71,11 @@ public class InstanceConstructor<T> {
                 throw new IllegalArgumentException(e);
             }
         }
+    }
+    
+    @Override
+    public String toString() {
+        return constructorsMap.toString();
     }
 
     private Class<?>[] getInitArgsTypes(Object... initArgs) {

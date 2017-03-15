@@ -83,6 +83,7 @@ public final class ResourcePermission extends Permission {
         int result = 1;
         result = prime * result + ((actions == null) ? 0 : actions.hashCode());
         result = prime * result + ((principals == null) ? 0 : principals.hashCode());
+        result += getName().hashCode();
         return result;
     }
 
@@ -95,7 +96,10 @@ public final class ResourcePermission extends Permission {
         if (getClass() != obj.getClass())
             return false;
         ResourcePermission other = (ResourcePermission) obj;
-        if (actions == null) {
+        if (getName() == null) {
+            if (other.getName() != null)
+                return false;
+        } else if (actions == null) {
             if (other.actions != null)
                 return false;
         } else if (!actions.equals(other.actions))

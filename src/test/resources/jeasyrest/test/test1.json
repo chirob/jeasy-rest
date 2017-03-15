@@ -1,4 +1,3 @@
-<json-envelope>
 {
   "rispostaIAC": {
     "intestazione": {
@@ -14,11 +13,13 @@
       "gruppiStrumenti": [
         {
           "riferimento": "00401952835",
-          "strumenti": {
-            "codiceSimbolo": "SC 00069038591",
-            "limiteSuperato": false,
-            "prezzo": 98.09
-          }
+          "strumenti": [ 
+            {
+              "codiceSimbolo": "SC 00069038591",
+              "limiteSuperato": false,
+              "prezzo": 98.09
+            }
+          ]
         },
         {
           "riferimento": "00401840119",
@@ -36,27 +37,32 @@
         },
         {
           "riferimento": "00400604671",
-          "strumenti": {
-            "codiceSimbolo": "SC 11100001970",
-            "limiteSuperato": false
-          }
+          "strumenti": [ 
+            {
+              "codiceSimbolo": "SC 11100001970",
+              "limiteSuperato": false
+            }
+          ]
         },
         {
           "riferimento": "00401788801",
-          "strumenti": {
-            "codiceSimbolo": "SC 00099229802",
-            "limiteSuperato": false
-          }
+          "strumenti": [ 
+            {
+              "codiceSimbolo": "SC 00099229802",
+              "limiteSuperato": false
+            }
+          ]
         },
         {
           "riferimento": "00401889514",
-          "strumenti": {
-            "codiceSimbolo": "SC 00676406603",
-            "limiteSuperato": false
-          }
+          "strumenti": [ 
+            {
+              "codiceSimbolo": "SC 00676406603",
+              "limiteSuperato": false
+            }
+          ]
         }
       ]
     }
   }
 }
-</json-envelope>

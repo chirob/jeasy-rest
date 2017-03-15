@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.core;
+package com.github.chirob.jeasyrest.core.impl;
 
 import java.io.IOException;
 import java.io.PipedReader;
@@ -6,16 +6,13 @@ import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.chirob.jeasyrest.concurrent.util.ThreadExecutor;
+import com.github.chirob.jeasyrest.core.Resource;
+import com.github.chirob.jeasyrest.core.Resource.Method;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.io.util.IOUtils;
 
 public abstract class ProcessingResource extends Resource {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProcessingResource.class);
 
     public abstract void process(Reader reader, Writer writer) throws IOException;
 
@@ -49,7 +46,7 @@ public abstract class ProcessingResource extends Resource {
                     try {
                         resource.process(preaderIn, pwriterOut);
                     } catch (Throwable t) {
-                        logger.error("Resource processing error", t);
+                        throw new RuntimeException("Resource processing error", t);
                     } finally {
                         closeStreams();
                     }

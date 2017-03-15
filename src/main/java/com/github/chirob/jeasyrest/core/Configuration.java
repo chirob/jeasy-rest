@@ -161,7 +161,7 @@ public class Configuration {
     private Configuration(String configName) {
         configProperties = new Properties();
         for (String mapName : Arrays.asList("META-INF/jeasyrest/" + configName + ".cfg",
-                "jeasyrest/" + configName + ".config")) {
+                "jeasyrest/" + configName + ".cfg")) {
             ClassloaderResources resources = new ClassloaderResources(mapName);
             for (URL url : resources) {
                 try {

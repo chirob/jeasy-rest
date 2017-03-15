@@ -8,10 +8,9 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
-import com.github.chirob.jeasyrest.core.ObjectProcessingResource;
-import com.github.chirob.jeasyrest.core.ProcessingResource;
 import com.github.chirob.jeasyrest.core.Resource;
-import com.github.chirob.jeasyrest.io.Source;
+import com.github.chirob.jeasyrest.core.impl.ObjectProcessingResource;
+import com.github.chirob.jeasyrest.core.impl.ProcessingResource;
 
 public class EchoJAXBProcessingResourceTest extends JAXBTest {
 
@@ -34,17 +33,9 @@ public class EchoJAXBProcessingResourceTest extends JAXBTest {
     }
 
     public void test2() throws IOException, JAXBException {
-        Reader reader = new StringReader(prepareStringRequest());
+        Reader reader = new StringReader(prepareXmlStringRequest());
         ProcessingResource resource = Resource.getResource("/test/services/xml/jaxb/echo");
         resource.process(reader, out);
     }
 
-    public void test3() throws IOException, JAXBException {
-        Source source = new Source(prepareStringRequest());
-        ObjectProcessingResource<Customer, Customer> resource = Resource.getResource("/test/services/xml/jaxb/echo");
-        Source target = new Source(resource, "utf-8", "get");
-        source.writeTo(target);
-        target.writeTo(out);
-    }
-    
 }
