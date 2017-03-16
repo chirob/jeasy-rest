@@ -24,7 +24,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.github.chirob.jeasyrest.concurrent.util.Pool;
 import com.github.chirob.jeasyrest.core.Resource;
 import com.github.chirob.jeasyrest.core.transform.ResourceTranformer;
-import com.github.chirob.jeasyrest.io.util.JsonReader;
+import com.github.chirob.jeasyrest.json.util.JsonReader;
 
 public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
