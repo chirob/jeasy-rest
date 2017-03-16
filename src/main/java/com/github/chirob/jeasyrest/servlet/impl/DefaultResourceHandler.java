@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.server.impl;
+package com.github.chirob.jeasyrest.servlet.impl;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -14,9 +14,9 @@ import com.github.chirob.jeasyrest.core.impl.ProcessingResource;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.core.io.UnavailableStreamException;
 import com.github.chirob.jeasyrest.io.util.IOUtils;
-import com.github.chirob.jeasyrest.server.ServletResourceHandler;
+import com.github.chirob.jeasyrest.servlet.ResourceHandler;
 
-public class DefaultServletResourceHandler implements ServletResourceHandler {
+public class DefaultResourceHandler implements ResourceHandler {
 
     @Override
     public void handleResource(HttpServletRequest request, HttpServletResponse response, Resource resource)

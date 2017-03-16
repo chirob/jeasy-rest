@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.server;
+package com.github.chirob.jeasyrest.servlet;
 
 @SuppressWarnings("serial")
 public class ResourceNotFoundException extends Exception {

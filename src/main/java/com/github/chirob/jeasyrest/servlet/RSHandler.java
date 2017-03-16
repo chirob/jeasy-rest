@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.server;
+package com.github.chirob.jeasyrest.servlet;
 
 import java.io.IOException;
 
@@ -11,16 +11,16 @@ import com.github.chirob.jeasyrest.core.Resource;
 import com.github.chirob.jeasyrest.ioc.Injections;
 import com.github.chirob.jeasyrest.ioc.util.PooledInstance;
 
-public class RSHandlerServlet extends HttpServlet {
+public class RSHandler extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        PooledInstance<ServletResourceResolver> resourceResolverInstance = null;
-        PooledInstance<ServletResourceHandler> resourceHandlerInstance = null;
-        PooledInstance<ServletExceptionHandler> exceptionHandlerInstance = null;
+        PooledInstance<ResourceResolver> resourceResolverInstance = null;
+        PooledInstance<ResourceHandler> resourceHandlerInstance = null;
+        PooledInstance<ExceptionHandler> exceptionHandlerInstance = null;
         
         response.reset();
         

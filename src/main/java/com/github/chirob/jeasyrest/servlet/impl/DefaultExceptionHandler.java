@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.server.impl;
+package com.github.chirob.jeasyrest.servlet.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.chirob.jeasyrest.server.ServletExceptionHandler;
+import com.github.chirob.jeasyrest.servlet.ExceptionHandler;
 
-public class DefaultServletExceptionHandler implements ServletExceptionHandler {
+public class DefaultExceptionHandler implements ExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServletExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
     @Override
     public void handleException(HttpServletRequest request, HttpServletResponse response, Throwable throwable)

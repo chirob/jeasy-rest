@@ -1,4 +1,4 @@
-package com.github.chirob.jeasyrest.server;
+package com.github.chirob.jeasyrest.servlet;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.github.chirob.jeasyrest.core.Resource;
 
-public interface ServletResourceHandler {
+public interface ResourceHandler {
 
     void handleResource(HttpServletRequest request, HttpServletResponse response, Resource resource)
             throws IOException, ServletException;
