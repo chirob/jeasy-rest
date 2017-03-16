@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.chirob.jeasyrest.core.io.Channel;
-import com.github.chirob.jeasyrest.core.io.StreamUnavailableException;
+import com.github.chirob.jeasyrest.core.io.UnavailableStreamException;
 import com.github.chirob.jeasyrest.core.io.WrapperChannel;
 import com.github.chirob.jeasyrest.io.util.AutoclosingReader;
 import com.github.chirob.jeasyrest.io.util.IOUtils;
@@ -20,7 +20,7 @@ class ResourceChannel extends WrapperChannel {
         try {
             reader = super.getReader();
         } catch (Exception e) {
-            throw new StreamUnavailableException(e);
+            throw new UnavailableStreamException(e);
         }
         if (reader != null) {
             if (!(reader instanceof AutoclosingReader)) {
@@ -35,7 +35,7 @@ class ResourceChannel extends WrapperChannel {
         try {
             return writer = super.getWriter();
         } catch (Exception e) {
-            throw new StreamUnavailableException(e);
+            throw new UnavailableStreamException(e);
         }
     }
 

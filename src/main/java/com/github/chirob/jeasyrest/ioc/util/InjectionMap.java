@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.chirob.jeasyrest.concurrent.util.Pool;
 import com.github.chirob.jeasyrest.io.util.LoadedProperties;
 import com.github.chirob.jeasyrest.reflect.ClassloaderResources;
 import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
@@ -20,12 +21,21 @@ public class InjectionMap {
 
     private static final Logger logger = LoggerFactory.getLogger(InjectionMap.class);
 
-    public <T> T singleton(String id, Object... initArgs) {
-        List<T> singletons = singletons(id, initArgs);
-        if (singletons.isEmpty()) {
-            throw new IllegalArgumentException("Cannot retrieve singleton instance by identifier: \"" + id + "\"");
+    public <T> PooledInstance<T> pooledInstance(String id) {
+        List<PooledInstance<T>> pooledInstances = pooledInstances(id);
+        if (pooledInstances.isEmpty()) {
+            throw new IllegalArgumentException("Cannot retrieve pooled instance by identifier: \"" + id + "\"");
         } else {
-            return (T) singletons.get(0);
+            return pooledInstances.get(0);
+        }
+    }
+    
+    public <T> Pool<T> poolInstance(String id) {
+        List<Pool<T>> poolInstances = poolInstances(id);
+        if (poolInstances.isEmpty()) {
+            throw new IllegalArgumentException("Cannot retrieve pool instance by identifier: \"" + id + "\"");
+        } else {
+            return poolInstances.get(0);
         }
     }
 
@@ -38,8 +48,47 @@ public class InjectionMap {
         }
     }
 
+    public <T> T singleton(String id, Object... initArgs) {
+        List<T> singletons = singletons(id, initArgs);
+        if (singletons.isEmpty()) {
+            throw new IllegalArgumentException("Cannot retrieve singleton instance by identifier: \"" + id + "\"");
+        } else {
+            return (T) singletons.get(0);
+        }
+    }
+
     protected InjectionMap(String... mapNames) {
         init(mapNames);
+    }
+
+    protected <T> List<T> newInstances(String id, Object... initArgs) {
+        return newInstances(id, injectors.get(id), initArgs);
+    }
+
+    protected <T> List<PooledInstance<T>> pooledInstances(String id) {
+        List<Pool<T>> poolInstances = poolInstances(id);
+        List<PooledInstance<T>> pooledInstances = new LinkedList<PooledInstance<T>>();
+        for (Pool<T> pool : poolInstances) {
+            pooledInstances.add(new PooledInstance<T>(pool));
+        }
+        return pooledInstances;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> List<Pool<T>> poolInstances(String id) {
+        List<Pool<T>> poolList = (List<Pool<T>>) pools.get(id);
+        if (poolList == null) {
+            poolList = new LinkedList<Pool<T>>();
+            List<InstanceConstructor<?>> constrList = injectors.get(id);
+            for (final InstanceConstructor<?> constr : constrList) {
+                poolList.add(new Pool<T>(0, 20) {
+                    protected T newInstance(Object... initArgs) {
+                        return (T) constr.newInstance(initArgs);
+                    }
+                });
+            }
+        }
+        return poolList;
     }
 
     @SuppressWarnings("unchecked")
@@ -50,10 +99,6 @@ public class InjectionMap {
             singletonList.addAll((List<T>) newInstances(id, initArgs));
         }
         return singletonList;
-    }
-
-    protected <T> List<T> newInstances(String id, Object... initArgs) {
-        return newInstances(id, injectors.get(id), initArgs);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,5 +159,6 @@ public class InjectionMap {
 
     protected Map<String, List<InstanceConstructor<?>>> injectors = new HashMap<String, List<InstanceConstructor<?>>>();
     protected Map<String, List<?>> singletons = new HashMap<String, List<?>>();
+    protected Map<String, List<? extends Pool<?>>> pools = new HashMap<String, List<? extends Pool<?>>>();
 
 }
