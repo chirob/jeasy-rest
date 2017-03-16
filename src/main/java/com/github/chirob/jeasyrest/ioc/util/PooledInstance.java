@@ -19,7 +19,7 @@ public class PooledInstance<T> {
         }
     }
 
-    PooledInstance(Pool<T> pool) {
+    protected PooledInstance(Pool<T> pool) {
         this.pool = pool;
     }
 

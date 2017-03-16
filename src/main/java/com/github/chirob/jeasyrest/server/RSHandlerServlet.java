@@ -23,6 +23,7 @@ public class RSHandlerServlet extends HttpServlet {
         PooledInstance<ServletExceptionHandler> exceptionHandlerInstance = null;
         
         response.reset();
+        
         try {
             resourceResolverInstance = Injections.INSTANCE.pooledInstance("servletResourceResolver");
             Resource resource = resourceResolverInstance.pop().resolveResource(request, response);

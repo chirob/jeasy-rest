@@ -16,18 +16,17 @@ class ResourceChannel extends WrapperChannel {
     public Reader getReader() throws IOException {
         IOUtils.close(writer);
 
-        Reader reader;
         try {
-            reader = super.getReader();
+            Reader reader = super.getReader();
+            if (reader != null) {
+                if (!(reader instanceof AutoclosingReader)) {
+                    reader = new AutoclosingReader(reader);
+                }
+            }
+            return reader;
         } catch (Exception e) {
             throw new UnavailableStreamException(e);
         }
-        if (reader != null) {
-            if (!(reader instanceof AutoclosingReader)) {
-                reader = new AutoclosingReader(reader);
-            }
-        }
-        return reader;
     }
 
     @Override
