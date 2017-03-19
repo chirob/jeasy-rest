@@ -1,5 +1,6 @@
 package com.github.chirob.jeasyrest.core.security;
 
+import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.Policy;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 import com.github.chirob.jeasyrest.core.Configuration;
 import com.github.chirob.jeasyrest.core.Resource.Method;
+import com.github.chirob.jeasyrest.core.error.ResourceAccessDeniedException;
 import com.github.chirob.jeasyrest.core.security.data.PermissionStore;
 import com.github.chirob.jeasyrest.ioc.Injections;
 
@@ -33,7 +35,11 @@ public class ResourcePolicy extends Policy {
     public static void checkPermission(String resourcePath, Set<? extends Principal> principals,
             Collection<Method> methods) {
         if (SECURITY_ENABLED) {
-            AccessController.checkPermission(new ResourcePermission(resourcePath, principals, methods));
+            try {
+                AccessController.checkPermission(new ResourcePermission(resourcePath, principals, methods));
+            } catch (AccessControlException e) {
+                throw new ResourceAccessDeniedException(resourcePath, methods);
+            }
         }
     }
 

@@ -7,10 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.chirob.jeasyrest.core.Resource;
+import com.github.chirob.jeasyrest.ioc.util.PooledInstance;
 
 public interface ResourceResolver {
 
-    Resource resolveResource(HttpServletRequest request, HttpServletResponse response)
+    PooledInstance<Resource> resolveResource(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException;
 
 }

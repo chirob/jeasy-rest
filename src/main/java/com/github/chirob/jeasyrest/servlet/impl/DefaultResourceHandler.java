@@ -51,6 +51,8 @@ public class DefaultResourceHandler implements ResourceHandler {
                 if (resourceReader != null) {
                     IOUtils.write(resourceReader, true, responseWriter, true);
                 }
+                
+                channel.close();
             }
         } finally {
             IOUtils.close(requestReader, responseWriter, resourceReader, resourceWriter);

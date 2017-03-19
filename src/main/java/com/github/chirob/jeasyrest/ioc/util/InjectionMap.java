@@ -29,7 +29,7 @@ public class InjectionMap {
             return pooledInstances.get(0);
         }
     }
-    
+
     public <T> Pool<T> poolInstance(String id) {
         List<Pool<T>> poolInstances = poolInstances(id);
         if (poolInstances.isEmpty()) {
@@ -78,15 +78,13 @@ public class InjectionMap {
     protected <T> List<Pool<T>> poolInstances(String id) {
         List<Pool<T>> poolList = (List<Pool<T>>) pools.get(id);
         if (poolList == null) {
+            final String finalId = id;
             poolList = new LinkedList<Pool<T>>();
-            List<InstanceConstructor<?>> constrList = injectors.get(id);
-            for (final InstanceConstructor<?> constr : constrList) {
-                poolList.add(new Pool<T>(0, 20) {
-                    protected T newInstance(Object... initArgs) {
-                        return (T) constr.newInstance(initArgs);
-                    }
-                });
-            }
+            poolList.add(new Pool<T>(0, 20) {
+                protected T newInstance(Object... initArgs) {
+                    return (T) InjectionMap.this.newInstances(finalId, initArgs);
+                }
+            });
         }
         return poolList;
     }
@@ -109,8 +107,15 @@ public class InjectionMap {
                 logger.trace("Trying to construct object identifyed by \"" + id + "\"");
                 newInstanceList.add((T) constr.newInstance(initArgs));
                 logger.trace("Construction object succeed");
-            } catch (Exception e) {
-                logger.trace("Construction object failed");
+            } catch (Throwable t) {
+                logger.trace("Construction object failed", t);
+                if (constrList.size() == 1) {
+                    if (t instanceof RuntimeException) {
+                        throw (RuntimeException) t;
+                    } else {
+                        throw new RuntimeException(t);
+                    }
+                }
             }
         }
         return newInstanceList;

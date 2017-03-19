@@ -10,29 +10,40 @@ import com.github.chirob.jeasyrest.ioc.util.InjectionMap;
 class ResourceMap extends InjectionMap {
 
     <T extends Resource> T get(String resourcePath) {
-        for (String id : injectors.keySet()) {
-            MessageFormat pathFormat = new MessageFormat(id);
-            String pathPattern = pathFormat.toPattern().replaceAll("\\{\\d+\\}", ".+");
-            if (resourcePath.matches(pathPattern)) {
-                URI resPath = URI.create(resourcePath);
-                String resPathPattern = pathPattern;
-                Object[] resParameters;
-                try {
-                    resParameters = pathFormat.parse(resourcePath);
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException(e);
+        URI resPath = null;
+        String resPathPattern = null;
+        Object[] resParameters = EMPTY_PARAMS;
+
+        if (injectors.containsKey(resourcePath)) {
+            resPathPattern = resourcePath;
+        } else {
+            for (String id : injectors.keySet()) {
+                resPathPattern = id.replaceAll("\\{\\d+\\}", ".+");
+                if (resourcePath.matches(resPathPattern)) {
+                    try {
+                        resParameters = new MessageFormat(id).parse(resourcePath);
+                    } catch (ParseException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }
-                T resource = newInstance(id);
-                resource.init(resPath, resPathPattern, resParameters);
-                return resource;
             }
         }
-        return null;
+
+        if (resPathPattern == null) {
+            return null;
+        } else {
+            resPath = URI.create(resourcePath);
+            T resource = newInstance(resPathPattern);
+            resource.init(resPath, resPathPattern, resParameters);
+            return resource;
+        }
     }
 
     ResourceMap() {
         super("META-INF/jeasyrest/resources", "jeasyrest/resources");
         ResourcePolicy.initialize();
+        System.out.println(injectors);
     }
 
+    private static final Object[] EMPTY_PARAMS = new Object[0];
 }

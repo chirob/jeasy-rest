@@ -18,28 +18,25 @@ public class RSHandler extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        PooledInstance<ResourceResolver> resourceResolverInstance = null;
-        PooledInstance<ResourceHandler> resourceHandlerInstance = null;
-        PooledInstance<ExceptionHandler> exceptionHandlerInstance = null;
-        
+        PooledInstance<Resource> resourceInstance = null;
+
         response.reset();
-        
+
         try {
-            resourceResolverInstance = Injections.INSTANCE.pooledInstance("servletResourceResolver");
-            Resource resource = resourceResolverInstance.pop().resolveResource(request, response);
-            
-            resourceHandlerInstance = Injections.INSTANCE.pooledInstance("servletResourceHandler");
-            resourceHandlerInstance.pop().handleResource(request, response, resource);
-            
+            ResourceResolver resourceResolver = Injections.INSTANCE.singleton("servletResourceResolver");
+            resourceInstance = resourceResolver.resolveResource(request, response);
+
+            ResourceHandler resourceHandler = Injections.INSTANCE.singleton("servletResourceHandler");
+            resourceHandler.handleResource(request, response, resourceInstance.pop());
+
             response.setStatus(200);
         } catch (Throwable throwable) {
-            exceptionHandlerInstance = Injections.INSTANCE.pooledInstance("servletExceptionHandler");            
-            exceptionHandlerInstance.pop().handleException(request, response, throwable);
+            ExceptionHandler exceptionHandler = Injections.INSTANCE.singleton("servletExceptionHandler");
+            exceptionHandler.handleException(request, response, throwable);
         } finally {
-            resourceResolverInstance.release();
-            resourceHandlerInstance.release();
-            exceptionHandlerInstance.release();
-            
+            if (resourceInstance != null) {
+                resourceInstance.release();
+            }
             if (!response.isCommitted()) {
                 response.flushBuffer();
             }

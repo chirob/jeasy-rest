@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
+import com.github.chirob.jeasyrest.core.error.ResourceNotFoundException;
 import com.github.chirob.jeasyrest.core.io.Channel;
 import com.github.chirob.jeasyrest.core.security.ResourcePolicy;
 import com.github.chirob.jeasyrest.ioc.Injections;
@@ -18,6 +19,9 @@ public abstract class Resource {
         T resource = RESOURCE_MAP.get(resourcePath);
         if (resource == null) {
             resource = Injections.INSTANCE.newInstance("remoteResource", resourcePath);
+        }
+        if (resource == null) {
+            throw new ResourceNotFoundException(resourcePath);
         }
         return resource;
     }

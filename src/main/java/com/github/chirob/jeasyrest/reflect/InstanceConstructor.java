@@ -1,6 +1,7 @@
 package com.github.chirob.jeasyrest.reflect;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,9 +17,9 @@ public class InstanceConstructor<T> {
         addConstructors(type.getDeclaredConstructors());
         initArgsList = Arrays.asList(initArgs);
     }
-    
+
     public boolean handleType(Class<?> type) {
-        for (Constructor<T> c: constructors) {
+        for (Constructor<T> c : constructors) {
             if (c.getDeclaringClass().equals(type)) {
                 return true;
             }
@@ -26,7 +27,7 @@ public class InstanceConstructor<T> {
         return false;
     }
 
-    public T newInstance(Object... initArgs) {
+    public T newInstance(Object... initArgs) throws Throwable {
         initArgsList.addAll(Arrays.asList(initArgs));
         Object[] allInitArgs = initArgsList.toArray();
         Class<?>[] initArgsTypes = getInitArgsTypes(allInitArgs);
@@ -34,11 +35,14 @@ public class InstanceConstructor<T> {
         if (constructor == null) {
             if (initArgsTypes == null) {
                 for (Constructor<T> c : constructors) {
-                    try {
-                        T newInstance = (T) c.newInstance(allInitArgs);
-                        constructorsMap.put(initArgsTypes, c);
-                        return newInstance;
-                    } catch (Exception e) {
+                    if (allInitArgs.length == c.getParameterTypes().length) {
+                        try {
+                            T newInstance = (T) c.newInstance(allInitArgs);
+                            constructorsMap.put(initArgsTypes, c);
+                            return newInstance;
+                        } catch (Exception e) {
+                            throw checkForTargetException(e);
+                        }
                     }
                 }
             } else {
@@ -58,6 +62,7 @@ public class InstanceConstructor<T> {
                             constructorsMap.put(initArgsTypes, c);
                             return newInstance;
                         } catch (Exception e) {
+                            throw checkForTargetException(e);
                         }
                     }
                 }
@@ -68,11 +73,11 @@ public class InstanceConstructor<T> {
             try {
                 return (T) constructor.newInstance(initArgs);
             } catch (Exception e) {
-                throw new IllegalArgumentException(e);
+                throw checkForTargetException(e);
             }
         }
     }
-    
+
     @Override
     public String toString() {
         return constructorsMap.toString();
@@ -98,9 +103,16 @@ public class InstanceConstructor<T> {
         }
     }
 
+    private static Throwable checkForTargetException(Throwable t) throws Throwable {
+        if (t instanceof InvocationTargetException) {
+            return checkForTargetException(((InvocationTargetException) t).getTargetException());
+        } else {
+            return t;
+        }
+    }
+
     private Map<Class<?>[], Constructor<T>> constructorsMap = new HashMap<Class<?>[], Constructor<T>>();
     private Set<Constructor<T>> constructors = new HashSet<Constructor<T>>();
     private List<Object> initArgsList;
-    
 
 }

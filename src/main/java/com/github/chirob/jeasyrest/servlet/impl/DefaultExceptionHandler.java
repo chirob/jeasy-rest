@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.chirob.jeasyrest.core.error.RSException;
 import com.github.chirob.jeasyrest.servlet.ExceptionHandler;
 
 public class DefaultExceptionHandler implements ExceptionHandler {
@@ -28,12 +29,9 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         private HttpError(Throwable throwable) {
             logger.error(throwable.getMessage(), throwable);
 
-            ExceptionType exceptionType = ExceptionType.valueOf(throwable.getClass().getSimpleName());
-            switch (exceptionType) {
-            case ResourceNotFoundException:
-                status = 404;
-                break;
-            default:
+            if (throwable instanceof RSException) {
+                status = ((RSException) throwable).getStatus();
+            } else {
                 status = 500;
             }
             message = errorMessage(throwable);
@@ -50,9 +48,5 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             return sw.toString();
         }
     }
-
-    private static enum ExceptionType {
-        ResourceNotFoundException
-    };
 
 }

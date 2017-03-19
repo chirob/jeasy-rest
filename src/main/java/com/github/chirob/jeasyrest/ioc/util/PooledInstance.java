@@ -5,7 +5,7 @@ import com.github.chirob.jeasyrest.concurrent.util.Pool;
 public class PooledInstance<T> {
 
     public T pop(Object... initArgs) {
-        if (pop) {
+        if (!pop) {
             pop = true;
             instance = pool.pop(initArgs);
         }
