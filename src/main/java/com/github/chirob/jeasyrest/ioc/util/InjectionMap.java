@@ -30,7 +30,7 @@ public class InjectionMap {
         }
     }
 
-    public <T> Pool<T> poolInstance(String id) {
+    public <T> Pool<T> poolInstance(String id, Object... initArgs) {
         List<Pool<T>> poolInstances = poolInstances(id);
         if (poolInstances.isEmpty()) {
             throw new IllegalArgumentException("Cannot retrieve pool instance by identifier: \"" + id + "\"");
@@ -82,7 +82,7 @@ public class InjectionMap {
             poolList = new LinkedList<Pool<T>>();
             poolList.add(new Pool<T>(0, 20) {
                 protected T newInstance(Object... initArgs) {
-                    return (T) InjectionMap.this.newInstances(finalId, initArgs);
+                    return (T) InjectionMap.this.newInstance(finalId, initArgs);
                 }
             });
         }

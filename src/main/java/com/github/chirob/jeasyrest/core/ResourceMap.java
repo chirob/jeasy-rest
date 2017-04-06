@@ -18,13 +18,14 @@ class ResourceMap extends InjectionMap {
             resPathPattern = resourcePath;
         } else {
             for (String id : injectors.keySet()) {
-                resPathPattern = id.replaceAll("\\{\\d+\\}", ".+");
-                if (resourcePath.matches(resPathPattern)) {
+                String pathPattern = id.replaceAll("\\{\\d+\\}", ".+");
+                if (resourcePath.matches(pathPattern)) {
                     try {
                         resParameters = new MessageFormat(id).parse(resourcePath);
                     } catch (ParseException e) {
                         throw new IllegalArgumentException(e);
                     }
+                    resPathPattern = pathPattern;                    
                 }
             }
         }
@@ -42,7 +43,6 @@ class ResourceMap extends InjectionMap {
     ResourceMap() {
         super("META-INF/jeasyrest/resources", "jeasyrest/resources");
         ResourcePolicy.initialize();
-        System.out.println(injectors);
     }
 
     private static final Object[] EMPTY_PARAMS = new Object[0];

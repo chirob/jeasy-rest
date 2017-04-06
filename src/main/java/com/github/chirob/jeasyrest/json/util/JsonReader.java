@@ -14,6 +14,12 @@ public class JsonReader {
         }
     }
 
+    public void startJson() throws IOException {
+    }
+
+    public void endJson() throws IOException {
+    }
+
     public void startObject() throws IOException {
     }
 

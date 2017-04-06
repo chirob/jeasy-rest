@@ -2,3 +2,5 @@ permissionStore=com.github.chirob.jeasyrest.core.security.data.FilePermissionSto
 servletResourceResolver=com.github.chirob.jeasyrest.servlet.impl.DefaultResourceResolver
 servletResourceHandler=com.github.chirob.jeasyrest.servlet.impl.DefaultResourceHandler
 servletExceptionHandler=com.github.chirob.jeasyrest.servlet.impl.DefaultExceptionHandler
+
+remoteResource=com.github.chirob.jeasyrest.core.http.RemoteResource

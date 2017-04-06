@@ -30,5 +30,5 @@ public class WrapperChannel implements Channel {
         this.channel = channel;
     }
 
-    private Channel channel;
+    protected Channel channel;
 }

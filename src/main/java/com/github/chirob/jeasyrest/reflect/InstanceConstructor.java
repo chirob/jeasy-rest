@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,8 +29,9 @@ public class InstanceConstructor<T> {
     }
 
     public T newInstance(Object... initArgs) throws Throwable {
-        initArgsList.addAll(Arrays.asList(initArgs));
-        Object[] allInitArgs = initArgsList.toArray();
+        List<Object> initArgsTmpList = new LinkedList<Object>(initArgsList);
+        initArgsTmpList.addAll(Arrays.asList(initArgs));
+        Object[] allInitArgs = initArgsTmpList.toArray();
         Class<?>[] initArgsTypes = getInitArgsTypes(allInitArgs);
         Constructor<T> constructor = constructorsMap.get(initArgsTypes);
         if (constructor == null) {
@@ -49,21 +51,23 @@ public class InstanceConstructor<T> {
                 for (Constructor<T> c : constructors) {
                     Class<?>[] paramTypes = c.getParameterTypes();
                     int i = 0;
-                    boolean match = true;
-                    for (Class<?> initArgsType : initArgsTypes) {
-                        if (i == paramTypes.length || !paramTypes[i++].isAssignableFrom(initArgsType)) {
-                            match = false;
-                            break;
-                        }
-                    }
+                    boolean match = initArgsTypes.length == paramTypes.length;
                     if (match) {
-                        try {
-                            T newInstance = (T) c.newInstance(allInitArgs);
-                            constructorsMap.put(initArgsTypes, c);
-                            return newInstance;
-                        } catch (Exception e) {
-                            throw checkForTargetException(e);
+                        for (Class<?> initArgsType : initArgsTypes) {
+                            if (!paramTypes[i++].isAssignableFrom(initArgsType)) {
+                                match = false;
+                                break;
+                            }
                         }
+                        if (match) {
+                            try {
+                                T newInstance = (T) c.newInstance(allInitArgs);
+                                constructorsMap.put(initArgsTypes, c);
+                                return newInstance;
+                            } catch (Exception e) {
+                                throw checkForTargetException(e);
+                            }
+                        }                        
                     }
                 }
             }

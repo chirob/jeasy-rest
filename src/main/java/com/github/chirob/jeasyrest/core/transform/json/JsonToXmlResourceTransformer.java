@@ -131,6 +131,11 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                     elementStack.addLast(key);
                 }
 
+                @Override
+                public void startJson() throws IOException {
+                    elementStack = new LinkedList<String>(Arrays.asList(rootElement));
+                }
+
                 private void writeStartElement(String key) throws IOException {
                     try {
                         xmlWriter.writeStartElement("", key, "");
@@ -147,7 +152,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                     }
                 }
 
-                private LinkedList<String> elementStack = new LinkedList<String>(Arrays.asList(rootElement));
+                private LinkedList<String> elementStack;
             };
         }
     };
@@ -193,6 +198,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                 public void endElement(String uri, String localName, String qName) throws SAXException {
                     if (textNode && !endElement) {
                         writeOutput(toJsonValue(textValue.toString().trim()));
+                        textValue.delete(0, textValue.length());
                     } else {
                         if (localName.endsWith("_array")) {
                             writeOutput("]");
@@ -204,7 +210,12 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
                     endElement = true;
                     textNode = false;
-                    textValue.delete(0, textValue.length());
+                }
+
+                @Override
+                public void startDocument() throws SAXException {
+                    textValue = new StringBuilder();
+                    arrayNames = new LinkedList<String>();
                 }
 
                 @Override
@@ -226,10 +237,10 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                     }
                 }
 
-                private StringBuilder textValue = new StringBuilder();
+                private StringBuilder textValue;
                 private boolean textNode;
                 private boolean endElement;
-                private LinkedList<String> arrayNames = new LinkedList<String>();
+                private LinkedList<String> arrayNames;
 
                 private String toJsonValue(Object value) {
                     String text = (String) value;

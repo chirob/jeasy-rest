@@ -16,8 +16,9 @@ class ResourceChannel extends WrapperChannel {
     public Reader getReader() throws IOException {
         IOUtils.close(writer);
 
+        Reader reader = null;
         try {
-            Reader reader = super.getReader();
+            reader = super.getReader();
             if (reader != null) {
                 if (!(reader instanceof AutoclosingReader)) {
                     reader = new AutoclosingReader(reader);
@@ -25,6 +26,7 @@ class ResourceChannel extends WrapperChannel {
             }
             return reader;
         } catch (Exception e) {
+            IOUtils.close(reader);
             throw new UnavailableStreamException(e);
         }
     }
@@ -34,6 +36,7 @@ class ResourceChannel extends WrapperChannel {
         try {
             return writer = super.getWriter();
         } catch (Exception e) {
+            IOUtils.close(writer);
             throw new UnavailableStreamException(e);
         }
     }

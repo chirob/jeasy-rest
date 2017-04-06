@@ -4,7 +4,7 @@ package com.github.chirob.jeasyrest.core.error;
 public class RSException extends RuntimeException {
 
     public RSException(int status, String message) {
-        super(message);
+        super("[" + status + "] - " + message);
         this.status = status;
     }
 
