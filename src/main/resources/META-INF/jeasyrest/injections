@@ -1,6 +1,6 @@
-permissionStore=com.github.chirob.jeasyrest.core.security.data.FilePermissionStore
-servletResourceResolver=com.github.chirob.jeasyrest.servlet.impl.DefaultResourceResolver
-servletResourceHandler=com.github.chirob.jeasyrest.servlet.impl.DefaultResourceHandler
-servletExceptionHandler=com.github.chirob.jeasyrest.servlet.impl.DefaultExceptionHandler
+permissionStore=com.github.jeasyrest.core.security.data.FilePermissionStore
+servletResourceResolver=com.github.jeasyrest.servlet.impl.DefaultResourceResolver
+servletResourceHandler=com.github.jeasyrest.servlet.impl.DefaultResourceHandler
+servletExceptionHandler=com.github.jeasyrest.servlet.impl.DefaultExceptionHandler
 
-remoteResource=com.github.chirob.jeasyrest.core.http.RemoteResource
+remoteResource=com.github.jeasyrest.core.http.RemoteResource

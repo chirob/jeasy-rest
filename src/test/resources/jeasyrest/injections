@@ -1,1 +1,1 @@
-authenticationManager=com.github.chirob.jeasyrest.test.core.TestAuthenticationManager
+authenticationManager=com.github.jeasyrest.test.core.TestAuthenticationManager
