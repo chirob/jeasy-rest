@@ -1,6 +1,7 @@
 package com.github.chirob.jeasyrest.test.core.http;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBException;
 
@@ -23,10 +24,13 @@ public class EchoHttpRemoteResourceTest extends HttpTest {
 
     public void test1() throws IOException, JAXBException {
         Source source = new Source(prepareJsonStringRequest());
-        Resource resource = Resource.getResource("http://localhost:8000/rs/test/services/xml/jaxb/echo");
+        Resource resource = Resource.getResource("http://localhost:8000/rs/test/services/echo");
         Source target = new Source(resource, "utf-8", "get");
         source.writeTo(target);
-        target.writeTo(out);
+        StringWriter sw = new StringWriter();
+        target.writeTo(sw);
+        sw.close();
+        System.out.println(sw);
     }
 
 }

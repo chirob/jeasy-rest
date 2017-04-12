@@ -23,7 +23,7 @@ public class ResourceTranformer extends ResourceWrapper {
     }
 
     @Override
-    public final Channel openChannel(Method method) throws IOException {
+    public Channel openChannel(Method method) throws IOException {
         return new PipeChannel(this, super.openChannel(method));
     }
 
@@ -44,6 +44,12 @@ public class ResourceTranformer extends ResourceWrapper {
 
         @Override
         public Reader getReader() throws IOException {
+            if (preaderOut == null) {
+                pwriterOut = new PipedWriter();
+                preaderOut = new PipedReader(pwriterOut);
+
+                processResource();
+            }
             return preaderOut;
         }
 
@@ -54,19 +60,7 @@ public class ResourceTranformer extends ResourceWrapper {
             preaderIn = new PipedReader();
             pwriterIn = new PipedWriter(preaderIn);
 
-            ThreadExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        transformer.transformIn(preaderIn, channel.getWriter());
-                        transformer.transformOut(channel.getReader(), pwriterOut);
-                    } catch (Throwable t) {
-                        throw new RuntimeException("Resource processing error", t);
-                    } finally {
-                        closeStreams();
-                    }
-                }
-            });
+            processResource();
 
             return pwriterIn;
         }
@@ -83,6 +77,24 @@ public class ResourceTranformer extends ResourceWrapper {
 
         private void closeStreams() {
             IOUtils.close(pwriterIn, pwriterOut);
+        }
+
+        private void processResource() {
+            ThreadExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (preaderIn != null) {
+                            transformer.transformIn(preaderIn, channel.getWriter());
+                        }
+                        transformer.transformOut(channel.getReader(), pwriterOut);
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Resource processing error", t);
+                    } finally {
+                        closeStreams();
+                    }
+                }
+            });
         }
 
         private PipedReader preaderIn;

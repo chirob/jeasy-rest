@@ -1,8 +1,6 @@
 package com.github.chirob.jeasyrest.core.transform.json;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -10,14 +8,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -25,22 +20,9 @@ import com.github.chirob.jeasyrest.concurrent.util.Pool;
 import com.github.chirob.jeasyrest.core.Resource;
 import com.github.chirob.jeasyrest.core.transform.ResourceTranformer;
 import com.github.chirob.jeasyrest.json.util.JsonReader;
+import com.github.chirob.jeasyrest.xml.util.SAXParserHelper;
 
 public class JsonToXmlResourceTransformer extends ResourceTranformer {
-
-    public static void main(String[] args) throws IOException {
-        // String json = "{ \"link\": {\"uri\":\"http://company.com\",
-        // \"title\":\"company homepage\" }}";
-        JsonToXmlResourceTransformer t = new JsonToXmlResourceTransformer((Resource) null);
-        // Reader r = new StringReader(json);
-        // Reader r = new
-        // FileReader("/workspaces/default/jeasy-rest/src/test/resources/jeasyrest/test/test1.json");
-        Reader r = new FileReader("/workspaces/default/jeasy-rest/src/test/resources/jeasyrest/test/test1.xml");
-        PrintWriter pw = new PrintWriter(System.out);
-        // t.transformIn(r, pw);
-        t.transformOut(r, pw);
-        pw.close();
-    }
 
     public JsonToXmlResourceTransformer(String originalPath) {
         this(originalPath, "root");
@@ -73,10 +55,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
     @Override
     protected void transformOut(Reader outputReader, Writer outputWriter) throws IOException {
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            SAXParser parser = factory.newSAXParser();
-            parser.parse(new InputSource(outputReader), SAXHANDLER_POOL.pop(outputWriter));
+            SAXParserHelper.parse(outputReader, SAXHANDLER_POOL.pop(outputWriter));
         } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e);
         }
@@ -165,51 +144,56 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes)
                         throws SAXException {
-                    boolean startArray = localName.endsWith("_array");
-                    String elementName = null;
-                    if (startArray) {
-                        elementName = localName.substring(0, localName.lastIndexOf('_'));
-                        arrayNames.addLast(elementName);
+                    if (root == null) {
+                        root = localName;
                     } else {
-                        elementName = localName;
-                    }
-
-                    if (endElement) {
-                        writeOutput(",");
-                    }
-
-                    if (arrayNames.isEmpty() || !arrayNames.getLast().equals(localName)) {
-                        if (!endElement) {
-                            writeOutput("{");
+                        boolean startArray = localName.endsWith("_array");
+                        String elementName = null;
+                        if (startArray) {
+                            elementName = localName.substring(0, localName.lastIndexOf('_'));
+                            arrayNames.addLast(elementName);
+                        } else {
+                            elementName = localName;
                         }
-                        writeOutput("\"");
-                        writeOutput(elementName);
-                        writeOutput("\":");
-                    }
 
-                    if (startArray) {
-                        writeOutput("[");
-                    }
+                        if (endElement) {
+                            writeOutput(",");
+                        }
 
-                    endElement = false;
+                        if (arrayNames.isEmpty() || !arrayNames.getLast().equals(localName)) {
+                            if (!endElement) {
+                                writeOutput("{");
+                            }
+                            writeOutput("\"");
+                            writeOutput(elementName);
+                            writeOutput("\":");
+                        }
+
+                        if (startArray) {
+                            writeOutput("[");
+                        }
+
+                        endElement = false;
+                    }
                 }
 
                 @Override
                 public void endElement(String uri, String localName, String qName) throws SAXException {
-                    if (textNode && !endElement) {
-                        writeOutput(toJsonValue(textValue.toString().trim()));
-                        textValue.delete(0, textValue.length());
-                    } else {
-                        if (localName.endsWith("_array")) {
-                            writeOutput("]");
-                            arrayNames.removeLast();
+                    if (!localName.equals(root)) {
+                        if (!endElement) {
+                            writeOutput(toJsonValue(textValue.toString().trim()));
+                            textValue.delete(0, textValue.length());
                         } else {
-                            writeOutput("}");
+                            if (localName.endsWith("_array")) {
+                                writeOutput("]");
+                                arrayNames.removeLast();
+                            } else {
+                                writeOutput("}");
+                            }
                         }
-                    }
 
-                    endElement = true;
-                    textNode = false;
+                        endElement = true;
+                    }
                 }
 
                 @Override
@@ -225,7 +209,6 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
                 @Override
                 public void characters(char[] ch, int start, int length) throws SAXException {
-                    textNode = true;
                     textValue.append(ch, start, length);
                 }
 
@@ -237,8 +220,8 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                     }
                 }
 
+                private String root;
                 private StringBuilder textValue;
-                private boolean textNode;
                 private boolean endElement;
                 private LinkedList<String> arrayNames;
 

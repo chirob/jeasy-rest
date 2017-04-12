@@ -16,7 +16,7 @@ public abstract class ProcessingResource extends Resource {
     public abstract void process(Reader reader, Writer writer) throws IOException;
 
     @Override
-    public final Channel openChannel(Method method) throws IOException {
+    public Channel openChannel(Method method) throws IOException {
         return new PipeChannel(this);
     }
 
@@ -29,28 +29,23 @@ public abstract class ProcessingResource extends Resource {
 
         @Override
         public Reader getReader() throws IOException {
+            if (preaderOut == null) {
+                pwriterOut = new PipedWriter();
+                preaderOut = new PipedReader(pwriterOut);
+
+                processResource();
+            }
             return preaderOut;
         }
 
         @Override
         public Writer getWriter() throws IOException {
-            pwriterOut = new PipedWriter();
-            preaderOut = new PipedReader(pwriterOut);
             preaderIn = new PipedReader();
             pwriterIn = new PipedWriter(preaderIn);
+            pwriterOut = new PipedWriter();
+            preaderOut = new PipedReader(pwriterOut);
 
-            ThreadExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        resource.process(preaderIn, pwriterOut);
-                    } catch (Throwable t) {
-                        throw new RuntimeException("Resource processing error", t);
-                    } finally {
-                        closeStreams();
-                    }
-                }
-            });
+            processResource();
 
             return pwriterIn;
         }
@@ -66,6 +61,21 @@ public abstract class ProcessingResource extends Resource {
 
         private void closeStreams() {
             IOUtils.close(pwriterIn, pwriterOut);
+        }
+
+        private void processResource() {
+            ThreadExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        resource.process(preaderIn, pwriterOut);
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Resource processing error", t);
+                    } finally {
+                        closeStreams();
+                    }
+                }
+            });
         }
 
         private PipedReader preaderIn;

@@ -1,3 +1,6 @@
 /test/services/echo=com.github.chirob.jeasyrest.test.core.EchoResource
 /test/services/xml/jaxb/echo=com.github.chirob.jeasyrest.test.core.xml.jaxb.EchoJAXBProcessingResource
 /test/services/json/echo=com.github.chirob.jeasyrest.core.transform.json.JsonToXmlResourceTransformer,/test/services/xml/jaxb/echo,customer
+
+
+http\://localhost\:8000/rs{0}=com.github.chirob.jeasyrest.core.http.RemoteResource

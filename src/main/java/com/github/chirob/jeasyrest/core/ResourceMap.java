@@ -3,9 +3,12 @@ package com.github.chirob.jeasyrest.core;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.List;
+import java.util.Map.Entry;
 
 import com.github.chirob.jeasyrest.core.security.ResourcePolicy;
 import com.github.chirob.jeasyrest.ioc.util.InjectionMap;
+import com.github.chirob.jeasyrest.reflect.InstanceConstructor;
 
 class ResourceMap extends InjectionMap {
 
@@ -34,7 +37,7 @@ class ResourceMap extends InjectionMap {
             return null;
         } else {
             resPath = URI.create(resourcePath);
-            T resource = newInstance(resPathPattern);
+            T resource = newResourceInstance(resPathPattern);
             resource.init(resPath, resPathPattern, resParameters);
             return resource;
         }
@@ -45,5 +48,15 @@ class ResourceMap extends InjectionMap {
         ResourcePolicy.initialize();
     }
 
+    private <T extends Resource> T newResourceInstance(String resPathPattern) {
+        for (Entry<String, List<InstanceConstructor<?>>> entry: injectors.entrySet()) {
+            String id = entry.getKey();
+            if (id.matches(resPathPattern)) {
+                return newInstance(id);
+            }
+        }
+        return null;
+    }
+    
     private static final Object[] EMPTY_PARAMS = new Object[0];
 }

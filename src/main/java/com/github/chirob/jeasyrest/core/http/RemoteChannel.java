@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 
@@ -46,14 +47,16 @@ public class RemoteChannel implements Channel {
         return false;
     }
 
-    public RemoteChannel(String remotePath, String encoding) throws IOException {
-        remoteURL = new URL(remotePath);
+    public RemoteChannel(URI remoteURI, String encoding) throws IOException {
+        remoteURL = remoteURI.toURL();
         charset = Charset.forName(encoding);
     }
 
     private HttpURLConnection getConnection() throws IOException {
         if (connection == null) {
             connection = (HttpURLConnection) remoteURL.openConnection();
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
             connection.connect();
         }
         return connection;

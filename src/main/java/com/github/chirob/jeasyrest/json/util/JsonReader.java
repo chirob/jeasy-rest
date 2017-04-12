@@ -43,27 +43,36 @@ public class JsonReader {
 
     private void parse(char[] chars, int off, int len) throws IOException {
         String line = new String(chars, off, len);
+        boolean startJson = false;
         for (int i = 0; i < line.length(); i++) {
             char ch = line.charAt(i);
             switch (ch) {
             case '{':
+                if (!startJson) {
+                    startJson();
+                    startJson = true;
+                }
                 startObject();
                 clearBuffer();
                 break;
             case '[':
+                if (!startJson) {
+                    startJson();
+                    startJson = true;
+                }
                 startArray();
                 clearBuffer();
                 break;
             case '}':
-                checkEndEntry();
+                checkEndEntry(true);
                 endObject();
                 break;
             case ']':
-                checkEndEntry();
+                checkEndEntry(true);
                 endArray();
                 break;
             case ',':
-                checkEndEntry();
+                checkEndEntry(false);
                 break;
             case ':':
                 checkStartEntry();
@@ -71,6 +80,9 @@ public class JsonReader {
             default:
                 sb.append(ch);
             }
+        }
+        if (startJson) {
+            endJson();
         }
     }
 
@@ -82,11 +94,13 @@ public class JsonReader {
         clearBuffer();
     }
 
-    private void checkEndEntry() throws IOException {
+    private void checkEndEntry(boolean endEntry) throws IOException {
         String value = getBufferedValue();
         if (value != null) {
             primitive(value);
-            endEntry();
+            if (endEntry) {
+                endEntry();
+            }
         }
         clearBuffer();
     }

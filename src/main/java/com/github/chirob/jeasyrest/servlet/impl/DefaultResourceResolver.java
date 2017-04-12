@@ -18,7 +18,7 @@ public class DefaultResourceResolver implements ResourceResolver {
     @Override
     public PooledInstance<Resource> resolveResource(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        final String resourcePath = request.getRequestURI();
+        final String resourcePath = request.getRequestURI().replace(request.getContextPath(), "");
         String resPathPattern = resourcePath.replaceAll("\\{\\d+\\}", ".+");
         PooledInstance<Resource> resourceIntsance = RESOURCE_POOL.get(resPathPattern);
         if (resourceIntsance == null) {

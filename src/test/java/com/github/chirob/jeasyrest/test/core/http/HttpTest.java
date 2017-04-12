@@ -7,12 +7,8 @@ import com.github.chirob.jeasyrest.test.core.AuthCoreTest;
 
 public class HttpTest extends AuthCoreTest {
 
-    static {
-        try {
-            RSServer.main(new String[0]);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public static void main(String[] args) throws Exception {
+        RSServer.main(args);
     }
 
     protected String prepareJsonStringRequest() throws JAXBException {

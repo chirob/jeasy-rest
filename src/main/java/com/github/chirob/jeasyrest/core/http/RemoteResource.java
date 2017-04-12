@@ -9,18 +9,16 @@ public class RemoteResource extends Resource {
 
     @Override
     public Channel openChannel(Method method) throws IOException {
-        return new RemoteChannel(remotePath, encoding);
+        return new RemoteChannel(getPath(), encoding);
     }
 
-    public RemoteResource(String remotePath) throws IOException {
-        this(remotePath, "UTF-8");
+    public RemoteResource() throws IOException {
+        this("UTF-8");
     }
 
-    public RemoteResource(String remotePath, String encoding) {
-        this.remotePath = remotePath;
+    public RemoteResource(String encoding) {
         this.encoding = encoding;
     }
 
-    private String remotePath;
     private String encoding;
 }
