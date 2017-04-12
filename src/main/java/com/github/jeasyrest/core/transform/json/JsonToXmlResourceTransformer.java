@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLOutputFactory;
@@ -81,13 +82,15 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
                 @Override
                 public void endEntry() throws IOException {
-                    elementStack.removeLast();
+                    if (!elementStack.getLast().getValue()) {
+                        elementStack.removeLast();
+                    }
                 }
 
                 @Override
                 public void primitive(Object value) throws IOException {
                     try {
-                        writeStartElement(elementStack.getLast());
+                        writeStartElement(elementStack.getLast().getKey());
                         xmlWriter.writeCharacters(value.toString());
                         writeEndElement();
                     } catch (XMLStreamException e) {
@@ -97,22 +100,24 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
                 @Override
                 public void startArray() throws IOException {
-                    writeStartElement(elementStack.getLast() + "_array");
+                    writeStartElement(elementStack.getLast().getKey() + "_array");
+                    elementStack.getLast().setValue(true);
                 }
 
                 @Override
                 public void startObject() throws IOException {
-                    writeStartElement(elementStack.getLast());
+                    writeStartElement(elementStack.getLast().getKey());
                 }
 
                 @Override
                 public void startEntry(String key) throws IOException {
-                    elementStack.addLast(key);
+                    elementStack.addLast(new SimpleEntry<String, Boolean>(key, false));
                 }
 
                 @Override
                 public void startJson() throws IOException {
-                    elementStack = new LinkedList<String>(Arrays.asList(rootElement));
+                    elementStack = new LinkedList<Entry<String, Boolean>>();
+                    elementStack.add(new SimpleEntry<String, Boolean>(rootElement, false));
                 }
 
                 private void writeStartElement(String key) throws IOException {
@@ -131,7 +136,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                     }
                 }
 
-                private LinkedList<String> elementStack;
+                private LinkedList<Entry<String, Boolean>> elementStack;
             };
         }
     };

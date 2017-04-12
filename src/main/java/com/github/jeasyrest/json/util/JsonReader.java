@@ -64,15 +64,15 @@ public class JsonReader {
                 clearBuffer();
                 break;
             case '}':
-                checkEndEntry(true);
+                checkEndEntry();
                 endObject();
                 break;
             case ']':
-                checkEndEntry(true);
+                checkEndEntry();
                 endArray();
                 break;
             case ',':
-                checkEndEntry(false);
+                checkEndEntry();
                 break;
             case ':':
                 checkStartEntry();
@@ -94,13 +94,11 @@ public class JsonReader {
         clearBuffer();
     }
 
-    private void checkEndEntry(boolean endEntry) throws IOException {
+    private void checkEndEntry() throws IOException {
         String value = getBufferedValue();
         if (value != null) {
             primitive(value);
-            if (endEntry) {
-                endEntry();
-            }
+            endEntry();
         }
         clearBuffer();
     }
