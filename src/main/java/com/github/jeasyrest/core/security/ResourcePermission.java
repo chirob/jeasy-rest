@@ -8,8 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource.Method;
 
 @SuppressWarnings("serial")
 public final class ResourcePermission extends Permission {

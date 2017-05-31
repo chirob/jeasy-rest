@@ -2,7 +2,7 @@ package com.github.jeasyrest.core.http;
 
 import java.io.IOException;
 
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.impl.Resource;
 import com.github.jeasyrest.core.io.Channel;
 
 public class RemoteResource extends Resource {

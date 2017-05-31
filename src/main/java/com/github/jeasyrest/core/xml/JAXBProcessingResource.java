@@ -25,10 +25,14 @@ public abstract class JAXBProcessingResource<Req, Res> extends ObjectProcessingR
     @SuppressWarnings("unchecked")
     @Override
     protected Req unmarshall(Reader reader) throws IOException {
-        try {
-            return (Req) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            throw new IOException(e);
+        if (reader == null) {
+            return null;
+        } else {
+            try {
+                return (Req) unmarshaller.unmarshal(reader);
+            } catch (JAXBException e) {
+                throw new IOException(e);
+            }
         }
     }
 

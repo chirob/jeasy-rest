@@ -1,45 +1,14 @@
-package com.github.jeasyrest.core;
+package com.github.jeasyrest.core.impl;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
+import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.io.Channel;
-import com.github.jeasyrest.core.io.WrapperChannel;
 import com.github.jeasyrest.core.security.ResourcePolicy;
-import com.github.jeasyrest.ioc.Injections;
-import com.github.jeasyrest.ioc.util.PooledInstance;
 
-public abstract class Resource {
-
-    public enum Method {
-        DELETE, GET, OPTIONS, PATCH, POST, PUT
-    }
-
-    @SuppressWarnings("unchecked")
-    public static final <T extends Resource> T getResource(String resourcePath) {
-        T resource = RESOURCE_MAP.get(resourcePath);
-        if (resource == null) {
-            final PooledInstance<Resource> pooledRemoteResource = Injections.INSTANCE.pooledInstance("remoteResource");
-            Resource remoteResource = pooledRemoteResource.pop(resourcePath);
-            resource = (T) new ResourceWrapper(remoteResource) {
-                @Override
-                public Channel openChannel(Method method) throws IOException {
-                    return new WrapperChannel(super.openChannel(method)) {
-                        @Override
-                        public void close() throws IOException {
-                            try {
-                                super.close();
-                            } finally {
-                                pooledRemoteResource.release();
-                            }
-                        }
-                    };
-                }
-            };
-        }
-        return resource;
-    }
+public abstract class Resource implements IResource {
 
     public abstract Channel openChannel(Method method) throws IOException;
 
@@ -108,7 +77,5 @@ public abstract class Resource {
     String[] parameters;
 
     private Channel channel;
-
-    private static final ResourceMap RESOURCE_MAP = new ResourceMap();
 
 }

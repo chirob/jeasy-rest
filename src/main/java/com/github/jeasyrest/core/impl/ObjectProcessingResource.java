@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-public abstract class ObjectProcessingResource<Req, Res> extends ProcessingResource {
+import com.github.jeasyrest.core.IObjectProcessingResource;
 
-    public abstract Res process(Req request);
+public abstract class ObjectProcessingResource<Req, Res> extends ProcessingResource
+        implements IObjectProcessingResource<Req, Res> {
 
     protected abstract void marshall(Res response, Writer writer) throws IOException;
 

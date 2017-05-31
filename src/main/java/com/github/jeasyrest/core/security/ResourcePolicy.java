@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jeasyrest.core.Configuration;
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.error.ResourceAccessDeniedException;
 import com.github.jeasyrest.core.security.data.PermissionStore;
 import com.github.jeasyrest.ioc.Injections;

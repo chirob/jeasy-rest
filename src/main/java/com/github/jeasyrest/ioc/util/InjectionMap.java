@@ -102,18 +102,20 @@ public class InjectionMap {
     @SuppressWarnings("unchecked")
     protected <T> List<T> newInstances(String id, List<InstanceConstructor<?>> constrList, Object... initArgs) {
         List<T> newInstanceList = new LinkedList<T>();
-        for (InstanceConstructor<?> constr : constrList) {
-            try {
-                logger.trace("Trying to construct object identifyed by \"" + id + "\"");
-                newInstanceList.add((T) constr.newInstance(initArgs));
-                logger.trace("Construction object succeed");
-            } catch (Throwable t) {
-                logger.trace("Construction object failed", t);
-                if (constrList.size() == 1) {
-                    if (t instanceof RuntimeException) {
-                        throw (RuntimeException) t;
-                    } else {
-                        throw new RuntimeException(t);
+        if (constrList != null) {
+            for (InstanceConstructor<?> constr : constrList) {
+                try {
+                    logger.trace("Trying to construct object identifyed by \"" + id + "\"");
+                    newInstanceList.add((T) constr.newInstance(initArgs));
+                    logger.trace("Construction object succeed");
+                } catch (Throwable t) {
+                    logger.trace("Construction object failed", t);
+                    if (constrList.size() == 1) {
+                        if (t instanceof RuntimeException) {
+                            throw (RuntimeException) t;
+                        } else {
+                            throw new RuntimeException(t);
+                        }
                     }
                 }
             }

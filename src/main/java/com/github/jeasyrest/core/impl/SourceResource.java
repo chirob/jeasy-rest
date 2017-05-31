@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.github.jeasyrest.core.Resource;
 import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.Source;
 import com.github.jeasyrest.io.util.IOUtils;

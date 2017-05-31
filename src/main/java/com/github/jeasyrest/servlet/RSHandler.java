@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.ioc.Injections;
 import com.github.jeasyrest.ioc.util.PooledInstance;
 
@@ -18,7 +18,7 @@ public class RSHandler extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        PooledInstance<Resource> resourceInstance = null;
+        PooledInstance<IResource> resourceInstance = null;
 
         response.reset();
 
@@ -43,5 +43,5 @@ public class RSHandler extends HttpServlet {
             }
         }
     }
-
+    
 }

@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IResource;
 
 public class JAXBResourceHandler<Req, Res> extends ResourceHandler<Req, Res> {
 
@@ -17,10 +17,10 @@ public class JAXBResourceHandler<Req, Res> extends ResourceHandler<Req, Res> {
         super(resourcePath);
     }
 
-    public JAXBResourceHandler(Resource resource) {
+    public JAXBResourceHandler(IResource resource) {
         super(resource);
     }
-    
+
     @Override
     protected void marshall(Req request, Writer writer) throws IOException {
         try {

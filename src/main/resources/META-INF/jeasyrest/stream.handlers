@@ -12,4 +12,4 @@ java.sql.Blob=com.github.jeasyrest.io.handlers.BlobHandler
 java.sql.Clob=com.github.jeasyrest.io.handlers.ClobHandler
 
 com.github.jeasyrest.core.io.Channel=com.github.jeasyrest.core.io.handlers.ChannelHandler
-com.github.jeasyrest.core.Resource=com.github.jeasyrest.core.io.handlers.ResourceHandler
+com.github.jeasyrest.core.IResource=com.github.jeasyrest.core.io.handlers.ResourceHandler

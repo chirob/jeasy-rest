@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.security.ResourcePermission;
 import com.github.jeasyrest.core.security.ResourcePrincipal;
 

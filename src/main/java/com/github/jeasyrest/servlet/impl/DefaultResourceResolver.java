@@ -9,32 +9,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.jeasyrest.concurrent.util.Pool;
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResourceFinder;
 import com.github.jeasyrest.ioc.util.PooledInstance;
 import com.github.jeasyrest.servlet.ResourceResolver;
 
 public class DefaultResourceResolver implements ResourceResolver {
 
     @Override
-    public PooledInstance<Resource> resolveResource(HttpServletRequest request, HttpServletResponse response)
+    public PooledInstance<IResource> resolveResource(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         final String resourcePath = request.getRequestURI().replace(request.getContextPath(), "");
         String resPathPattern = resourcePath.replaceAll("\\{\\d+\\}", ".+");
-        PooledInstance<Resource> resourceIntsance = RESOURCE_POOL.get(resPathPattern);
+        PooledInstance<IResource> resourceIntsance = RESOURCE_POOL.get(resPathPattern);
         if (resourceIntsance == null) {
-            Pool<Resource> pool = new Pool<Resource>(0, 20) {
+            Pool<IResource> pool = new Pool<IResource>(0, 20) {
                 @Override
-                protected Resource newInstance(Object... initArgs) {
-                    return Resource.getResource(resourcePath);
+                protected IResource newInstance(Object... initArgs) {
+                    return IResourceFinder.INSTANCE.find(resourcePath);
                 }
             };
-            resourceIntsance = new PooledInstance<Resource>(pool) {
+            resourceIntsance = new PooledInstance<IResource>(pool) {
             };
             RESOURCE_POOL.put(resPathPattern, resourceIntsance);
         }
         return resourceIntsance;
     }
 
-    private static final Map<String, PooledInstance<Resource>> RESOURCE_POOL = new HashMap<String, PooledInstance<Resource>>();
+    private static final Map<String, PooledInstance<IResource>> RESOURCE_POOL = new HashMap<String, PooledInstance<IResource>>();
 
 }

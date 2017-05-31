@@ -1,3 +1,4 @@
+
 package com.github.jeasyrest.core.transform;
 
 import java.io.IOException;
@@ -7,8 +8,8 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
-import com.github.jeasyrest.core.Resource;
-import com.github.jeasyrest.core.ResourceWrapper;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.impl.ResourceWrapper;
 import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.util.IOUtils;
 
@@ -18,7 +19,7 @@ public class ResourceTranformer extends ResourceWrapper {
         super(originalPath);
     }
 
-    public ResourceTranformer(Resource original) {
+    public ResourceTranformer(IResource original) {
         super(original);
     }
 

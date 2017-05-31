@@ -2,7 +2,7 @@ package com.github.jeasyrest.core.error;
 
 import java.util.Collection;
 
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource.Method;
 
 @SuppressWarnings("serial")
 public class ResourceAccessDeniedException extends RSException {

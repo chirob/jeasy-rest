@@ -61,7 +61,7 @@ public class HttpServerHandler implements HttpHandler {
 
     public void flushBuffer() {
     }
-    
+
     public boolean isCommitted() {
         return false;
     }
@@ -76,8 +76,8 @@ public class HttpServerHandler implements HttpHandler {
 
     @SuppressWarnings("unchecked")
     private <T> T getHttpHandler(Class<T> servletInterface) {
-        return (T) Proxy.newProxyInstance(HttpServerHandler.class.getClassLoader(), new Class[] { servletInterface },
-                new InvocationHandler() {
+        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class[] { servletInterface }, new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         Method proxyMethod = null;

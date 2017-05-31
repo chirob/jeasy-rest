@@ -6,7 +6,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.impl.Resource;
 import com.github.jeasyrest.core.io.Channel;
 
 public class EchoResource extends Resource {

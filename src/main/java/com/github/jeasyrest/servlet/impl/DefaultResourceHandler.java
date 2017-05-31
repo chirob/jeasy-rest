@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.jeasyrest.core.Resource;
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.impl.ProcessingResource;
 import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.core.io.UnavailableStreamException;
@@ -19,7 +19,7 @@ import com.github.jeasyrest.servlet.ResourceHandler;
 public class DefaultResourceHandler implements ResourceHandler {
 
     @Override
-    public void handleResource(HttpServletRequest request, HttpServletResponse response, Resource resource)
+    public void handleResource(HttpServletRequest request, HttpServletResponse response, IResource resource)
             throws IOException, ServletException {
         Reader requestReader = null;
         Writer responseWriter = null;
@@ -51,7 +51,7 @@ public class DefaultResourceHandler implements ResourceHandler {
                 if (resourceReader != null) {
                     IOUtils.write(resourceReader, true, responseWriter, true);
                 }
-                
+
                 channel.close();
             }
         } finally {

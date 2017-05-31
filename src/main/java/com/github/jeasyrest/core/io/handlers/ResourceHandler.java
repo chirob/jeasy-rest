@@ -2,14 +2,14 @@ package com.github.jeasyrest.core.io.handlers;
 
 import java.io.IOException;
 
-import com.github.jeasyrest.core.Resource;
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResource.Method;
 
 public class ResourceHandler extends ChannelHandler {
 
     @Override
     public void init(Object sourceObject, Object... sourceParams) throws IOException {
-        super.init(((Resource) sourceObject).getChannel(getMethod(sourceParams)));
+        super.init(((IResource) sourceObject).getChannel(getMethod(sourceParams)));
     }
 
     private static Method getMethod(Object... sourceParams) {

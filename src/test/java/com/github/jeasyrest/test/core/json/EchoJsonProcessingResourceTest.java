@@ -6,7 +6,8 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResourceFinder;
 import com.github.jeasyrest.core.transform.json.JsonToXmlResourceTransformer;
 import com.github.jeasyrest.io.Source;
 
@@ -24,7 +25,7 @@ public class EchoJsonProcessingResourceTest extends JsonTest {
 
     public void test1() throws IOException, JAXBException {
         Source source = new Source(prepareJsonStringRequest());
-        Resource resource = Resource.getResource("/test/services/xml/jaxb/echo");
+        IResource resource = IResourceFinder.INSTANCE.find("/test/services/xml/jaxb/echo");
         resource = new JsonToXmlResourceTransformer(resource, "customer");
         Source target = new Source(resource, "utf-8", "get");
         source.writeTo(target);
@@ -33,7 +34,7 @@ public class EchoJsonProcessingResourceTest extends JsonTest {
 
     public void test2() throws IOException, JAXBException {
         Source source = new Source(prepareJsonStringRequest());
-        Resource resource = Resource.getResource("/test/services/json/echo");
+        IResource resource = IResourceFinder.INSTANCE.find("/test/services/json/echo");
         Source target = new Source(resource, "utf-8", "get");
         source.writeTo(target);
         target.writeTo(out);

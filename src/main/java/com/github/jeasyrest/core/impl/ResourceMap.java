@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core;
+package com.github.jeasyrest.core.impl;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -6,13 +6,14 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.security.ResourcePolicy;
 import com.github.jeasyrest.ioc.util.InjectionMap;
 import com.github.jeasyrest.reflect.InstanceConstructor;
 
 class ResourceMap extends InjectionMap {
 
-    <T extends Resource> T get(String resourcePath) {
+    <T extends IResource> T get(String resourcePath) {
         URI resPath = null;
         String resPathPattern = null;
         Object[] resParameters = EMPTY_PARAMS;
@@ -28,7 +29,7 @@ class ResourceMap extends InjectionMap {
                     } catch (ParseException e) {
                         throw new IllegalArgumentException(e);
                     }
-                    resPathPattern = pathPattern;                    
+                    resPathPattern = pathPattern;
                 }
             }
         }
@@ -38,7 +39,7 @@ class ResourceMap extends InjectionMap {
         } else {
             resPath = URI.create(resourcePath);
             T resource = newResourceInstance(resPathPattern);
-            resource.init(resPath, resPathPattern, resParameters);
+            ((Resource) resource).init(resPath, resPathPattern, resParameters);
             return resource;
         }
     }
@@ -48,8 +49,8 @@ class ResourceMap extends InjectionMap {
         ResourcePolicy.initialize();
     }
 
-    private <T extends Resource> T newResourceInstance(String resPathPattern) {
-        for (Entry<String, List<InstanceConstructor<?>>> entry: injectors.entrySet()) {
+    private <T extends IResource> T newResourceInstance(String resPathPattern) {
+        for (Entry<String, List<InstanceConstructor<?>>> entry : injectors.entrySet()) {
             String id = entry.getKey();
             if (id.matches(resPathPattern)) {
                 return newInstance(id);
@@ -57,6 +58,6 @@ class ResourceMap extends InjectionMap {
         }
         return null;
     }
-    
+
     private static final Object[] EMPTY_PARAMS = new Object[0];
 }

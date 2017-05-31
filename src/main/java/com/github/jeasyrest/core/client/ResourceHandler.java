@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.github.jeasyrest.core.Resource;
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResource.Method;
+import com.github.jeasyrest.core.IResourceFinder;
 import com.github.jeasyrest.core.io.Channel;
 
 public abstract class ResourceHandler<Req, Res> {
@@ -15,10 +16,10 @@ public abstract class ResourceHandler<Req, Res> {
     protected abstract Res unmarshall(Class<Res> responseType, Reader reader) throws IOException;
 
     public ResourceHandler(String resourcePath) {
-        this(Resource.getResource(resourcePath));
+        this(IResourceFinder.INSTANCE.find(resourcePath));
     }
 
-    public ResourceHandler(Resource resource) {
+    public ResourceHandler(IResource resource) {
         this.resource = resource;
     }
 
@@ -63,6 +64,7 @@ public abstract class ResourceHandler<Req, Res> {
         return handle(Method.PUT, request, responseType);
     }
 
-    private Resource resource;
+    private IResource resource;
 
 }
+

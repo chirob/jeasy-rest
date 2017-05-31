@@ -1,3 +1,5 @@
+resourceFinder=com.github.jeasyrest.core.impl.ResourceFinder
+
 permissionStore=com.github.jeasyrest.core.security.data.FilePermissionStore
 servletResourceResolver=com.github.jeasyrest.servlet.impl.DefaultResourceResolver
 servletResourceHandler=com.github.jeasyrest.servlet.impl.DefaultResourceHandler

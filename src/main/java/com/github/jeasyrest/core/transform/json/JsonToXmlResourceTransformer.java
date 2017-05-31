@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.github.jeasyrest.concurrent.util.Pool;
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.transform.ResourceTranformer;
 import com.github.jeasyrest.json.util.JsonReader;
 import com.github.jeasyrest.xml.util.SAXParserHelper;
@@ -29,7 +29,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
         this(originalPath, "root");
     }
 
-    public JsonToXmlResourceTransformer(Resource original) {
+    public JsonToXmlResourceTransformer(IResource original) {
         this(original, "root");
     }
 
@@ -38,7 +38,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
         this.rootElement = rootElement;
     }
 
-    public JsonToXmlResourceTransformer(Resource original, String rootElement) {
+    public JsonToXmlResourceTransformer(IResource original, String rootElement) {
         super(original);
         this.rootElement = rootElement;
     }

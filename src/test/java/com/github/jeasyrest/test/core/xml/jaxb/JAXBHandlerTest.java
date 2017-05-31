@@ -4,8 +4,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.github.jeasyrest.core.Resource;
-import com.github.jeasyrest.core.Resource.Method;
+import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.IResource.Method;
+import com.github.jeasyrest.core.IResourceFinder;
 import com.github.jeasyrest.core.client.JAXBResourceHandler;
 
 public class JAXBHandlerTest extends JAXBTest {
@@ -21,7 +22,7 @@ public class JAXBHandlerTest extends JAXBTest {
     }
 
     public void test1() throws IOException {
-        Resource resource = Resource.getResource("/test/services/echo");
+        IResource resource = IResourceFinder.INSTANCE.find("/test/services/echo");
         JAXBResourceHandler<Customer, Customer> resourceHandler = new JAXBResourceHandler<Customer, Customer>(resource);
 
         Customer request = prepareObjectRequest();
@@ -30,7 +31,7 @@ public class JAXBHandlerTest extends JAXBTest {
     }
 
     public void test2() throws IOException {
-        Resource resource = Resource.getResource("/test/services/echo");
+        IResource resource = IResourceFinder.INSTANCE.find("/test/services/echo");
         JAXBResourceHandler<Customer, Customer> resourceHandler = new JAXBResourceHandler<Customer, Customer>(resource);
 
         Customer request = prepareObjectRequest();
@@ -56,9 +57,8 @@ public class JAXBHandlerTest extends JAXBTest {
         printResponse(response);
     }
 
-    private void printResponse(Customer response) {
-        out.println(response);
-        out.flush();
+    private void printResponse(Customer response) throws IOException {
+        out.getWriter().write(response.toString());
     }
 
 }

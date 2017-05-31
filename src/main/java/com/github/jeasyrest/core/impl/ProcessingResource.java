@@ -7,11 +7,11 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
-import com.github.jeasyrest.core.Resource;
+import com.github.jeasyrest.core.IProcessingResource;
 import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public abstract class ProcessingResource extends Resource {
+public abstract class ProcessingResource extends Resource implements IProcessingResource {
 
     public abstract void process(Reader reader, Writer writer) throws IOException;
 
