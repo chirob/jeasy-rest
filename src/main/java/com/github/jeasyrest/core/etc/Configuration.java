@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core;
+package com.github.jeasyrest.core.etc;
 
 import java.io.IOException;
 import java.math.BigDecimal;

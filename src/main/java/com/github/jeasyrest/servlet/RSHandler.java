@@ -31,7 +31,6 @@ public class RSHandler extends HttpServlet {
 
             response.setStatus(200);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
             ExceptionHandler exceptionHandler = Injections.INSTANCE.singleton("servletExceptionHandler");
             exceptionHandler.handleException(request, response, throwable);
         } finally {

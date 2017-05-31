@@ -20,7 +20,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.github.jeasyrest.concurrent.util.Pool;
 import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.transform.ResourceTranformer;
-import com.github.jeasyrest.json.util.JsonReader;
+import com.github.jeasyrest.json.util.DefaultJsonReader;
+import com.github.jeasyrest.json.util.JsonParser;
 import com.github.jeasyrest.xml.util.SAXParserHelper;
 
 public class JsonToXmlResourceTransformer extends ResourceTranformer {
@@ -47,7 +48,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
     protected void transformIn(Reader inputReader, Writer inputWriter) throws IOException {
         try {
             XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(inputWriter);
-            JSONREADER_POOL.pop(xmlWriter, rootElement).parse(inputReader);
+            JSONPARSER_POOL.pop(xmlWriter, rootElement).parse(inputReader);
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
@@ -64,12 +65,12 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
 
     private String rootElement;
 
-    private static final Pool<JsonReader> JSONREADER_POOL = new Pool<JsonReader>(0, 20) {
+    private static final Pool<JsonParser> JSONPARSER_POOL = new Pool<JsonParser>(0, 20) {
         @Override
-        protected JsonReader newInstance(Object... initArgs) {
+        protected JsonParser newInstance(Object... initArgs) {
             final XMLStreamWriter xmlWriter = (XMLStreamWriter) initArgs[0];
             final String rootElement = (String) initArgs[1];
-            return new JsonReader() {
+            return new JsonParser(new DefaultJsonReader() {
                 @Override
                 public void endArray() throws IOException {
                     writeEndElement();
@@ -137,7 +138,7 @@ public class JsonToXmlResourceTransformer extends ResourceTranformer {
                 }
 
                 private LinkedList<Entry<String, Boolean>> elementStack;
-            };
+            });
         }
     };
 

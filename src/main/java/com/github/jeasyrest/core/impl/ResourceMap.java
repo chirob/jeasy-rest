@@ -30,6 +30,7 @@ class ResourceMap extends InjectionMap {
                         throw new IllegalArgumentException(e);
                     }
                     resPathPattern = pathPattern;
+                    break;
                 }
             }
         }

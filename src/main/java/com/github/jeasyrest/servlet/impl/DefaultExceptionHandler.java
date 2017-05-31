@@ -21,14 +21,14 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     @Override
     public void handleException(HttpServletRequest request, HttpServletResponse response, Throwable throwable)
             throws IOException, ServletException {
+        logger.error(throwable.getMessage(), throwable);
+        
         HttpError error = new HttpError(throwable);
         response.sendError(error.status, error.message);
     }
 
     private static final class HttpError {
         private HttpError(Throwable throwable) {
-            logger.error(throwable.getMessage(), throwable);
-
             if (throwable instanceof RSException) {
                 status = ((RSException) throwable).getStatus();
             } else {

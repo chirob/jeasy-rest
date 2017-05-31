@@ -1,8 +1,8 @@
-resourceFinder=com.github.jeasyrest.core.impl.ResourceFinder
+resourceFinder=com.github.jeasyrest.core.impl.ProxyResourceFinder
+remoteResourceFinder=com.github.jeasyrest.core.impl.RemoteResourceFinder
+remoteResource=com.github.jeasyrest.core.http.RemoteResource
 
 permissionStore=com.github.jeasyrest.core.security.data.FilePermissionStore
 servletResourceResolver=com.github.jeasyrest.servlet.impl.DefaultResourceResolver
 servletResourceHandler=com.github.jeasyrest.servlet.impl.DefaultResourceHandler
 servletExceptionHandler=com.github.jeasyrest.servlet.impl.DefaultExceptionHandler
-
-remoteResource=com.github.jeasyrest.core.http.RemoteResource

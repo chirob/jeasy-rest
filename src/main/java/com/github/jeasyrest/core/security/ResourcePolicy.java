@@ -12,9 +12,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.github.jeasyrest.core.Configuration;
 import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.error.ResourceAccessDeniedException;
+import com.github.jeasyrest.core.etc.Configuration;
 import com.github.jeasyrest.core.security.data.PermissionStore;
 import com.github.jeasyrest.ioc.Injections;
 

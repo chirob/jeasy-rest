@@ -110,13 +110,6 @@ public class InjectionMap {
                     logger.trace("Construction object succeed");
                 } catch (Throwable t) {
                     logger.trace("Construction object failed", t);
-                    if (constrList.size() == 1) {
-                        if (t instanceof RuntimeException) {
-                            throw (RuntimeException) t;
-                        } else {
-                            throw new RuntimeException(t);
-                        }
-                    }
                 }
             }
         }
