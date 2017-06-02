@@ -18,6 +18,8 @@ public class RSHandler extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        ServletRunningContext.init(request, response);
+
         PooledInstance<IResource> resourceInstance = null;
 
         response.reset();
@@ -42,5 +44,5 @@ public class RSHandler extends HttpServlet {
             }
         }
     }
-    
+
 }

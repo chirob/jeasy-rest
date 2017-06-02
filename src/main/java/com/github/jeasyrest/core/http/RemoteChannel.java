@@ -58,6 +58,7 @@ public class RemoteChannel implements Channel {
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.connect();
+            HttpRunningContext.init(connection);
         }
         return connection;
     }
