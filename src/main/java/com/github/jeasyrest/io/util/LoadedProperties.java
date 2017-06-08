@@ -12,8 +12,6 @@ public class LoadedProperties extends Properties {
     public LoadedProperties(InputStream in) throws IOException {
         try {
             load(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } finally {
             IOUtils.close(in);
         }
@@ -22,8 +20,6 @@ public class LoadedProperties extends Properties {
     public LoadedProperties(Reader in) throws IOException {
         try {
             load(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } finally {
             IOUtils.close(in);
         }

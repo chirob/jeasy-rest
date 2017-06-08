@@ -20,5 +20,5 @@ public class RemoteResource extends Resource {
         this.encoding = encoding;
     }
 
-    private String encoding;
+    protected String encoding;
 }

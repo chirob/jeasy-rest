@@ -11,7 +11,7 @@ public class TypeHierarchy implements Iterable<Class<?>> {
     }
 
     public TypeHierarchy(Class<?> type) {
-        addAncestors(type, Mode.ALL);
+        this(type, Mode.ALL);
     }
 
     public TypeHierarchy(Class<?> type, Mode mode) {

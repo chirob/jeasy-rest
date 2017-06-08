@@ -16,10 +16,12 @@ public class RemoteChannel implements Channel {
 
     @Override
     public void close() throws IOException {
-        try {
-            connection.disconnect();
-        } finally {
-            connection = null;
+        if (connection != null) {
+            try {
+                connection.disconnect();
+            } finally {
+                connection = null;
+            }
         }
     }
 

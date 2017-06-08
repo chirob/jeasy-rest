@@ -25,7 +25,7 @@ public class RunningContext implements IRunningContext {
     }
 
     protected RunningContext() {
-        ThreadLocalMap.INSTANCE.put(IRunningContext.class, this);
+        ThreadLocalMap.getInstance().put(IRunningContext.class, this);
     }
 
     private HashMap<Class<?>, Object> instances = new HashMap<Class<?>, Object>();

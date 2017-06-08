@@ -5,6 +5,10 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class ThreadLocalMap extends HashMap<Object, Object> {
 
+    public static ThreadLocalMap getInstance() {
+        return TL.get();
+    }
+
     @Override
     public Object put(Object key, Object value) {
         if (containsKey(key)) {
@@ -22,7 +26,5 @@ public class ThreadLocalMap extends HashMap<Object, Object> {
             return new ThreadLocalMap();
         }
     };
-
-    public static final ThreadLocalMap INSTANCE = TL.get();
 
 }

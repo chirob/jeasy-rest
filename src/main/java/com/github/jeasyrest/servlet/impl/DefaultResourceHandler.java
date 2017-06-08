@@ -12,7 +12,6 @@ import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.impl.ProcessingResource;
 import com.github.jeasyrest.core.io.Channel;
-import com.github.jeasyrest.core.io.UnavailableStreamException;
 import com.github.jeasyrest.io.util.IOUtils;
 import com.github.jeasyrest.servlet.ResourceHandler;
 
@@ -36,18 +35,14 @@ public class DefaultResourceHandler implements ResourceHandler {
             } else {
                 Channel channel = resource.getChannel(method);
 
-                try {
-                    resourceWriter = channel.getWriter();
-                } catch (UnavailableStreamException e) {
-                }
+                resourceWriter = channel.getWriter();
                 if (resourceWriter != null) {
                     IOUtils.write(requestReader, true, resourceWriter, true);
                 }
+                
+                response.setStatus(200);
 
-                try {
-                    resourceReader = channel.getReader();
-                } catch (UnavailableStreamException e) {
-                }
+                resourceReader = channel.getReader();
                 if (resourceReader != null) {
                     IOUtils.write(resourceReader, true, responseWriter, true);
                 }

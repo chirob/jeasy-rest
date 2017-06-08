@@ -22,6 +22,7 @@ public class HttpServerHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        committed = false;
         this.httpExchange = httpExchange;
         HttpServletRequest request = getHttpHandler(HttpServletRequest.class);
         HttpServletResponse response = getHttpHandler(HttpServletResponse.class);
@@ -53,17 +54,19 @@ public class HttpServerHandler implements HttpHandler {
     }
 
     public PrintWriter getWriter() throws IOException {
-        return new PrintWriter(new OutputStreamWriter(httpExchange.getResponseBody(), "UTF-8"));
+        return new PrintWriter(new OutputStreamWriter(httpExchange.getResponseBody(), "UTF-8"), true);
     }
 
     public void reset() {
     }
 
     public void flushBuffer() {
+        httpExchange.close();
+        committed = true;
     }
 
     public boolean isCommitted() {
-        return false;
+        return committed;
     }
 
     public void setStatus(int sc) {
@@ -96,6 +99,7 @@ public class HttpServerHandler implements HttpHandler {
                 });
     }
 
+    private boolean committed;
     private HttpExchange httpExchange;
     private RSHandler servlet = new RSHandler();
 }

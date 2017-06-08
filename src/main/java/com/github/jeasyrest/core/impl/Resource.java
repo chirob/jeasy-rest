@@ -69,13 +69,14 @@ public abstract class Resource implements IResource {
 
         this.path = path;
         this.pathPattern = pathPattern;
-        this.parameters = Arrays.copyOf(parameters, parameters.length, String[].class);
+        this.parameters = parameters == null ? new String[0]
+                : Arrays.copyOf(parameters, parameters.length, String[].class);
     }
 
     URI path;
     String pathPattern;
     String[] parameters;
 
-    private Channel channel;
+    protected Channel channel;
 
 }

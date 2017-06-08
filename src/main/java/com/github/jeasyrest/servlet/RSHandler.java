@@ -30,9 +30,8 @@ public class RSHandler extends HttpServlet {
 
             ResourceHandler resourceHandler = Injections.INSTANCE.singleton("servletResourceHandler");
             resourceHandler.handleResource(request, response, resourceInstance.pop());
-
-            response.setStatus(200);
         } catch (Throwable throwable) {
+            log("Unexpected error", throwable);
             ExceptionHandler exceptionHandler = Injections.INSTANCE.singleton("servletExceptionHandler");
             exceptionHandler.handleException(request, response, throwable);
         } finally {

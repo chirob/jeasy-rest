@@ -1,36 +1,67 @@
 package com.github.jeasyrest.core.http;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import com.github.jeasyrest.core.IObjectProcessingResource;
 import com.github.jeasyrest.core.io.Channel;
-import com.github.jeasyrest.core.xml.JAXBProcessingResource;
+import com.github.jeasyrest.io.util.IOUtils;
+import com.github.jeasyrest.xml.util.JAXBContexts;
 
-public class RemoteJAXBProcessingResource<Req, Res> extends JAXBProcessingResource<Req, Res> {
+public class RemoteJAXBProcessingResource<Req, Res> extends RemoteResource
+        implements IObjectProcessingResource<Req, Res> {
+
+    public RemoteJAXBProcessingResource(Class<? extends Req> requestType, Class<? extends Res> responseType) {
+        super("UTF-8");
+        try {
+            unmarshaller = JAXBContexts.get(requestType).createUnmarshaller();
+            marshaller = JAXBContexts.get(responseType).createMarshaller();
+        } catch (JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 
     @Override
-    public Channel openChannel(Method method) throws IOException {
-        return new RemoteChannel(getPath(), encoding);
+    public void process(Reader reader, Writer writer) throws IOException {
+        IOUtils.write(reader, true, channel.getWriter(), true);
+        IOUtils.write(channel.getReader(), true, writer, true);
     }
-
-    public RemoteJAXBProcessingResource(String requestType, String responseType) throws ClassNotFoundException {
-        this("UTF-8", requestType, responseType);
-    }
-
-    @SuppressWarnings("unchecked")
-    public RemoteJAXBProcessingResource(String encoding, String requestType, String responseType)
-            throws ClassNotFoundException {
-        super((Class<? extends Req>) typeOf(requestType), (Class<? extends Res>) typeOf(responseType));
-        this.encoding = encoding;
-    }
-
-    private static Class<?> typeOf(String type) throws ClassNotFoundException {
-        return Class.forName(type);
-    }
-
-    private String encoding;
 
     @Override
     public Res process(Req request) {
-        return null;
+        try {
+            marshall(request, channel.getWriter());
+            return unmarshall(channel.getReader());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    protected void marshall(Req request, Writer writer) throws IOException {
+        try {
+            marshaller.marshal(request, writer);
+        } catch (JAXBException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Res unmarshall(Reader reader) throws IOException {
+        try {
+            return (Res) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            throw new IOException(e);
+        }
+    }
+
+    private Marshaller marshaller;
+    private Unmarshaller unmarshaller;
+
+    private Channel channel;
+
 }

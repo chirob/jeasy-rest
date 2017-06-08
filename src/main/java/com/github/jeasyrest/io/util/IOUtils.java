@@ -50,6 +50,7 @@ public class IOUtils {
         } catch (Exception e) {
             closeIn = true;
             closeOut = true;
+            throwIOException(e);
         } finally {
             if (closeIn) {
                 close(in);
@@ -72,6 +73,7 @@ public class IOUtils {
         } catch (Exception e) {
             closeIn = true;
             closeOut = true;
+            throwIOException(e);
         } finally {
             if (closeIn) {
                 close(in);
