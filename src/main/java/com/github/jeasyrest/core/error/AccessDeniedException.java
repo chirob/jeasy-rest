@@ -5,9 +5,9 @@ import java.util.Collection;
 import com.github.jeasyrest.core.IResource.Method;
 
 @SuppressWarnings("serial")
-public class ResourceAccessDeniedException extends RSException {
+public class AccessDeniedException extends RSException {
 
-    public ResourceAccessDeniedException(String resourcePath, Collection<Method> methods) {
+    public AccessDeniedException(String resourcePath, Collection<Method> methods) {
         super(403, getMessage(resourcePath, methods));
     }
 

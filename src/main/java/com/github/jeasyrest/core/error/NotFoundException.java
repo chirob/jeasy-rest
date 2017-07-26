@@ -1,9 +1,9 @@
 package com.github.jeasyrest.core.error;
 
 @SuppressWarnings("serial")
-public class ResourceNotFoundException extends RSException {
+public class NotFoundException extends RSException {
 
-    public ResourceNotFoundException(String resourcePath) {
+    public NotFoundException(String resourcePath) {
         super(404, "The resource '" + resourcePath + " has not been found");
     }
 

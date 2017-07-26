@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jeasyrest.core.IResource.Method;
-import com.github.jeasyrest.core.error.ResourceAccessDeniedException;
+import com.github.jeasyrest.core.error.AccessDeniedException;
 import com.github.jeasyrest.core.etc.Configuration;
 import com.github.jeasyrest.core.security.data.PermissionStore;
 import com.github.jeasyrest.ioc.Injections;
@@ -38,7 +38,7 @@ public class ResourcePolicy extends Policy {
             try {
                 AccessController.checkPermission(new ResourcePermission(resourcePath, principals, methods));
             } catch (AccessControlException e) {
-                throw new ResourceAccessDeniedException(resourcePath, methods);
+                throw new AccessDeniedException(resourcePath, methods);
             }
         }
     }
