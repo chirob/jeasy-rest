@@ -8,9 +8,10 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IResource;
+import com.github.jeasyrest.core.impl.Channel;
 import com.github.jeasyrest.core.impl.ResourceWrapper;
-import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.util.IOUtils;
 
 public class ResourceTranformer extends ResourceWrapper {
@@ -24,7 +25,7 @@ public class ResourceTranformer extends ResourceWrapper {
     }
 
     @Override
-    public Channel openChannel(Method method) throws IOException {
+    public IChannel openChannel(Method method) throws IOException {
         return new PipeChannel(this, super.openChannel(method));
     }
 
@@ -36,7 +37,7 @@ public class ResourceTranformer extends ResourceWrapper {
         IOUtils.write(outputReader, true, outputWriter, true);
     }
 
-    private static final class PipeChannel implements Channel {
+    private static final class PipeChannel extends Channel {
         @Override
         public void close() {
             closeStreams();
@@ -71,7 +72,7 @@ public class ResourceTranformer extends ResourceWrapper {
             return transformer == null;
         }
 
-        private PipeChannel(ResourceTranformer transformer, Channel channel) {
+        private PipeChannel(ResourceTranformer transformer, IChannel channel) {
             this.transformer = transformer;
             this.channel = channel;
         }
@@ -104,7 +105,7 @@ public class ResourceTranformer extends ResourceWrapper {
         private PipedWriter pwriterOut;
 
         private ResourceTranformer transformer;
-        private Channel channel;
+        private IChannel channel;
     }
 
 }

@@ -1,6 +1,8 @@
 /test/services/echo=com.github.jeasyrest.test.core.EchoResource
 /test/services/xml/jaxb/echo=com.github.jeasyrest.test.core.xml.jaxb.EchoJAXBProcessingResource
-/test/services/json/echo=com.github.jeasyrest.core.transform.json.JsonToXmlResourceTransformer,/test/services/xml/jaxb/echo,customer
+/test/services/json/echo/{0}=com.github.jeasyrest.test.core.json.EchoJSONProcessingResource
 
+{0}/test/services/xml/jaxb/echo=com.github.jeasyrest.core.http.RemoteResource,com.github.jeasyrest.test.core.xml.jaxb.Customer,com.github.jeasyrest.test.core.xml.jaxb.Customer
+{0}/test/services/json/echo/{1}=com.github.jeasyrest.core.http.RemoteResource,com.github.jeasyrest.test.core.xml.jaxb.Customer,com.github.jeasyrest.test.core.xml.jaxb.Customer
 
 http\://localhost\:8000/rs{0}=com.github.jeasyrest.core.http.RemoteResource

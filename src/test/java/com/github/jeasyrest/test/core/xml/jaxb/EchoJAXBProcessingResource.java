@@ -6,7 +6,7 @@ public class EchoJAXBProcessingResource extends JAXBProcessingResource<Customer,
 
     @Override
     public Customer process(Customer request) {
-        return request;
+        return null;
     }
 
     protected EchoJAXBProcessingResource() {

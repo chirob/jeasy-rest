@@ -2,7 +2,6 @@ package com.github.jeasyrest.core.xml;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,10 +21,9 @@ public abstract class SAXProcessingResource extends ProcessingResource {
     public final void process(Reader reader, Writer writer) throws IOException {
         try {
             Reader sourceReader = reader;
-            if (sourceReader == null) {
-                sourceReader = new StringReader("<empty></empty>");
+            if (sourceReader != null) {
+                SAXParserHelper.parse(sourceReader, getContentHandler(writer));
             }
-            SAXParserHelper.parse(sourceReader, getContentHandler(writer));
         } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e);
         }

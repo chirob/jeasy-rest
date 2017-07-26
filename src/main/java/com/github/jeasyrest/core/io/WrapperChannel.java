@@ -4,11 +4,24 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-public class WrapperChannel implements Channel {
+import com.github.jeasyrest.core.IChannel;
+import com.github.jeasyrest.core.IHeaders;
+
+public class WrapperChannel implements IChannel {
 
     @Override
     public void close() throws IOException {
         channel.close();
+    }
+
+    @Override
+    public IHeaders requestHeaders() throws IOException {
+        return channel.requestHeaders();
+    }
+
+    @Override
+    public IHeaders responseHeaders() throws IOException {
+        return channel.responseHeaders();
     }
 
     @Override
@@ -26,9 +39,14 @@ public class WrapperChannel implements Channel {
         return channel.isClosed();
     }
 
-    protected WrapperChannel(Channel channel) {
+    public IChannel unwrap() {
+        return channel;
+    }
+    
+    protected WrapperChannel(IChannel channel) {
         this.channel = channel;
     }
 
-    protected Channel channel;
+    private IChannel channel;
+
 }

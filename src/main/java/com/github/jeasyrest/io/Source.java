@@ -19,7 +19,11 @@ public class Source {
     }
 
     public void writeTo(boolean closeTarget, Source target, Object... sourceParams) throws IOException {
-        IOUtils.write(getReader(), true, target.getWriter(), closeTarget);
+        Reader reader = getReader();
+        Writer writer = target.getWriter();
+        if (reader != null && writer != null) {
+            IOUtils.write(reader, true, writer, closeTarget);
+        }
     }
 
     public Reader getReader() throws IOException {

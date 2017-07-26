@@ -36,12 +36,18 @@ public class BaseTest {
         Class<? extends BaseTest> testClass = BaseTest.this.getClass();
         for (Method method : testClass.getMethods()) {
             if (!method.getName().startsWith("run") && method.getDeclaringClass().equals(testClass)) {
+                long startTime = System.currentTimeMillis();
+                logger.info("Start time (millis): {}", startTime);
                 try {
                     method.invoke(BaseTest.this);
                 } catch (InvocationTargetException e) {
                     e.getTargetException().printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    long endTime = System.currentTimeMillis();
+                    logger.info("End time (millis): {}", endTime);
+                    logger.info("Method " + method.getName() + " elapsed time (millis): {}", (endTime - startTime));
                 }
             }
         }

@@ -26,6 +26,7 @@ public class JAXBResourceHandler<Req, Res> extends ResourceHandler<Req, Res> {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(request.getClass());
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);          
             // jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
             // true);
             jaxbMarshaller.marshal(request, writer);

@@ -7,8 +7,8 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IProcessingResource;
-import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.util.IOUtils;
 
 public abstract class ProcessingResource extends Resource implements IProcessingResource {
@@ -16,11 +16,11 @@ public abstract class ProcessingResource extends Resource implements IProcessing
     public abstract void process(Reader reader, Writer writer) throws IOException;
 
     @Override
-    public Channel openChannel(Method method) throws IOException {
+    public IChannel openChannel(Method method) throws IOException {
         return new PipeChannel(this);
     }
 
-    private static final class PipeChannel implements Channel {
+    private static final class PipeChannel extends Channel {
         @Override
         public void close() {
             closeStreams();

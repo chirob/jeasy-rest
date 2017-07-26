@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IResource;
-import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.core.security.ResourcePolicy;
 
 public abstract class Resource implements IResource {
 
-    public abstract Channel openChannel(Method method) throws IOException;
+    public abstract IChannel openChannel(Method method) throws IOException;
 
-    public final Channel getChannel(Method method) throws IOException {
+    public final IChannel getChannel(Method method) throws IOException {
         ResourcePolicy.checkPermission(pathPattern, Arrays.asList(method));
         if (channel == null || channel.isClosed()) {
             channel = new ResourceChannel(openChannel(method));
@@ -20,31 +20,31 @@ public abstract class Resource implements IResource {
         return channel;
     }
 
-    public final Channel getChannel(String methodName) throws IOException {
+    public final IChannel getChannel(String methodName) throws IOException {
         return getChannel(Method.valueOf(methodName.toUpperCase()));
     }
 
-    public final Channel delete() throws IOException {
+    public final IChannel delete() throws IOException {
         return getChannel(Method.DELETE);
     }
 
-    public final Channel get() throws IOException {
+    public final IChannel get() throws IOException {
         return getChannel(Method.GET);
     }
 
-    public final Channel options() throws IOException {
+    public final IChannel options() throws IOException {
         return getChannel(Method.OPTIONS);
     }
 
-    public final Channel patch() throws IOException {
+    public final IChannel patch() throws IOException {
         return getChannel(Method.PATCH);
     }
 
-    public final Channel post() throws IOException {
+    public final IChannel post() throws IOException {
         return getChannel(Method.POST);
     }
 
-    public final Channel put() throws IOException {
+    public final IChannel put() throws IOException {
         return getChannel(Method.PUT);
     }
 
@@ -64,6 +64,10 @@ public abstract class Resource implements IResource {
         return pathPattern;
     }
 
+    protected IChannel currentChannel() {
+        return channel;
+    }
+    
     void init(URI path, String pathPattern, Object[] parameters) {
         ResourcePolicy.checkPermission(pathPattern);
 
@@ -77,6 +81,6 @@ public abstract class Resource implements IResource {
     String pathPattern;
     String[] parameters;
 
-    protected Channel channel;
+    private IChannel channel;
 
 }

@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.github.jeasyrest.core.io.Channel;
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.io.StreamHandler;
 
 public class ChannelHandler implements StreamHandler {
 
     @Override
     public void init(Object sourceObject, Object... sourceParams) throws IOException {
-        channel = (Channel) sourceObject;
+        channel = (IChannel) sourceObject;
     }
 
     @Override
@@ -24,6 +24,6 @@ public class ChannelHandler implements StreamHandler {
         return channel.getWriter();
     }
 
-    private Channel channel;
+    private IChannel channel;
 
 }

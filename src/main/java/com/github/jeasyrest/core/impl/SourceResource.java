@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.github.jeasyrest.core.io.Channel;
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.io.Source;
 import com.github.jeasyrest.io.util.IOUtils;
 
@@ -15,7 +15,7 @@ public class SourceResource extends Resource {
     }
 
     @Override
-    public Channel openChannel(Method method) throws IOException {
+    public IChannel openChannel(Method method) throws IOException {
         if (sourceObject instanceof Resource) {
             return ((Resource) sourceObject).openChannel(method);
         } else {
@@ -23,7 +23,7 @@ public class SourceResource extends Resource {
         }
     }
 
-    private static final class SourceChannel implements Channel {
+    private static final class SourceChannel extends Channel {
         @Override
         public void close() {
             IOUtils.close(reader, writer);

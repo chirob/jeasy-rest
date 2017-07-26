@@ -6,13 +6,14 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import com.github.jeasyrest.core.IChannel;
+import com.github.jeasyrest.core.impl.Channel;
 import com.github.jeasyrest.core.impl.Resource;
-import com.github.jeasyrest.core.io.Channel;
 
 public class EchoResource extends Resource {
 
     @Override
-    public Channel openChannel(Method method) throws IOException {
+    public IChannel openChannel(Method method) throws IOException {
         return new Channel() {
             @Override
             public Reader getReader() throws IOException {

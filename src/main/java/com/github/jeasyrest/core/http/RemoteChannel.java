@@ -1,24 +1,29 @@
 package com.github.jeasyrest.core.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.Charset;
 
-import com.github.jeasyrest.core.io.Channel;
+import javax.activation.MimeType;
 
-public class RemoteChannel implements Channel {
+import com.github.jeasyrest.core.IChannel;
+import com.github.jeasyrest.core.IHeaders;
+import com.github.jeasyrest.core.IResource.Method;
+import com.github.jeasyrest.io.util.IOUtils;
+
+public class RemoteChannel implements IChannel {
 
     @Override
     public void close() throws IOException {
         if (connection != null) {
             try {
-                connection.disconnect();
+                getConnection().disconnect();
             } finally {
                 connection = null;
             }
@@ -27,7 +32,18 @@ public class RemoteChannel implements Channel {
 
     @Override
     public Reader getReader() throws IOException {
-        return new InputStreamReader(getConnection().getInputStream(), charset) {
+        InputStream inStream = null;
+        try {
+            inStream = getConnection().getInputStream();
+        } catch (IOException e) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                IOUtils.write(getConnection().getErrorStream(), true, baos, false);
+            } catch (Exception ex) {
+            }
+            throw new IOException(baos.toString("UTF-8"), e);
+        }
+        return new InputStreamReader(inStream, charset) {
             @Override
             public void close() throws IOException {
                 try {
@@ -49,23 +65,52 @@ public class RemoteChannel implements Channel {
         return false;
     }
 
-    public RemoteChannel(URI remoteURI, String encoding) throws IOException {
-        remoteURL = remoteURI.toURL();
-        charset = Charset.forName(encoding);
+    @Override
+    public IHeaders requestHeaders() throws IOException {
+        return new RemoteHeaders(true, getConnection());
     }
 
-    private HttpURLConnection getConnection() throws IOException {
+    @Override
+    public IHeaders responseHeaders() throws IOException {
+        return new RemoteHeaders(false, getConnection());
+    }
+
+    public HttpURLConnection getConnection() throws IOException {
         if (connection == null) {
-            connection = (HttpURLConnection) remoteURL.openConnection();
+            connection = new RemoteConnection(resource);
             connection.setDoInput(true);
             connection.setDoOutput(true);
-            connection.connect();
-            HttpRunningContext.init(connection);
+            connection.setRequestMethod(method.name());
         }
         return connection;
     }
 
-    private URL remoteURL;
+    public void setContentType(String contentType) throws IOException {
+        getConnection().setRequestProperty("Content-Type", contentType.toString());
+    }
+
+    public String getContentType() throws IOException {
+        return getConnection().getRequestProperty("Content-Type");
+    }
+
+    public RemoteChannel(RemoteResource<?, ?> resource, Method method) throws IOException {
+        this.method = method;
+        this.resource = resource;
+        charset = Charset.forName("UTF-8");
+    }
+
+    protected void setContentMimeType(MimeType contentType) {
+        String encoding = null;
+        if (contentType != null) {
+            encoding = contentType.getParameter("charset");
+        }
+        if (encoding != null) {
+            charset = Charset.forName(encoding);
+        }
+    }
+
+    private RemoteResource<?, ?> resource;
+    private Method method;
     private Charset charset;
 
     private HttpURLConnection connection;

@@ -8,14 +8,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.impl.ProcessingResource;
-import com.github.jeasyrest.core.io.Channel;
 import com.github.jeasyrest.io.util.IOUtils;
 import com.github.jeasyrest.servlet.ResourceHandler;
 
 public class DefaultResourceHandler implements ResourceHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultResourceHandler.class);
 
     @Override
     public void handleResource(HttpServletRequest request, HttpServletResponse response, IResource resource)
@@ -24,7 +29,7 @@ public class DefaultResourceHandler implements ResourceHandler {
         Writer responseWriter = null;
         Reader resourceReader = null;
         Writer resourceWriter = null;
-
+        long startTime = System.currentTimeMillis();
         try {
             Method method = Method.valueOf(request.getMethod());
 
@@ -33,14 +38,12 @@ public class DefaultResourceHandler implements ResourceHandler {
             if (resource instanceof ProcessingResource) {
                 ((ProcessingResource) resource).process(requestReader, responseWriter);
             } else {
-                Channel channel = resource.getChannel(method);
+                IChannel channel = resource.getChannel(method);
 
                 resourceWriter = channel.getWriter();
                 if (resourceWriter != null) {
                     IOUtils.write(requestReader, true, resourceWriter, true);
                 }
-                
-                response.setStatus(200);
 
                 resourceReader = channel.getReader();
                 if (resourceReader != null) {
@@ -51,6 +54,9 @@ public class DefaultResourceHandler implements ResourceHandler {
             }
         } finally {
             IOUtils.close(requestReader, responseWriter, resourceReader, resourceWriter);
+            long endTime = System.currentTimeMillis();
+            logger.info("Handling resource " + resource.getPath() + " elapsed time (millis): {}",
+                    (endTime - startTime));
         }
     }
 

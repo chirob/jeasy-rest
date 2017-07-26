@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.IResourceFinder;
-import com.github.jeasyrest.core.io.Channel;
 
 public abstract class ResourceHandler<Req, Res> {
 
@@ -24,7 +24,7 @@ public abstract class ResourceHandler<Req, Res> {
     }
 
     public Res handle(Method method, Req request, Class<Res> responseType) throws IOException {
-        Channel channel = null;
+        IChannel channel = null;
         try {
             channel = resource.getChannel(method);
             marshall(request, channel.getWriter());

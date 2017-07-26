@@ -11,6 +11,7 @@ import com.github.jeasyrest.test.BaseTest;
 public class AuthCoreTest extends BaseTest {
 
     protected void run(boolean auth) {
+        logger.info("Authentication enabled: {}", auth);
         if (auth) {
             AuthenticationManager<Void> authManager = Injections.INSTANCE.singleton("authenticationManager");
             Subject subject = authManager.authenticate(null);

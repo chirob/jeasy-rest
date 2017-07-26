@@ -3,8 +3,10 @@ package com.github.jeasyrest.core.impl;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.security.ResourcePolicy;
@@ -14,35 +16,38 @@ import com.github.jeasyrest.reflect.InstanceConstructor;
 class ResourceMap extends InjectionMap {
 
     <T extends IResource> T get(String resourcePath) {
-        URI resPath = null;
         String resPathPattern = null;
         Object[] resParameters = EMPTY_PARAMS;
 
+        Set<String> idSet = null;
         if (injectors.containsKey(resourcePath)) {
-            resPathPattern = resourcePath;
+            idSet = new HashSet<String>();
+            idSet.add(resourcePath);
         } else {
-            for (String id : injectors.keySet()) {
-                String pathPattern = id.replaceAll("\\{\\d+\\}", ".+");
-                if (resourcePath.matches(pathPattern)) {
-                    try {
-                        resParameters = new MessageFormat(id).parse(resourcePath);
-                    } catch (ParseException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                    resPathPattern = pathPattern;
-                    break;
+            idSet = injectors.keySet();
+        }
+        for (String id : idSet) {
+            String pathPattern = id.replaceAll("\\{\\d+\\}", ".+");
+            if (resourcePath.matches(pathPattern)) {
+                try {
+                    resParameters = new MessageFormat(id).parse(resourcePath);
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
                 }
+                resPathPattern = pathPattern;
+                break;
             }
         }
 
         if (resPathPattern == null) {
             return null;
         } else {
-            resPath = URI.create(resourcePath);
+            URI resPath = URI.create(resourcePath);
             T resource = newResourceInstance(resPathPattern);
             ((Resource) resource).init(resPath, resPathPattern, resParameters);
             return resource;
         }
+
     }
 
     ResourceMap() {

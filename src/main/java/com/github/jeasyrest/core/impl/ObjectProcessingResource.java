@@ -4,20 +4,35 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.github.jeasyrest.core.IMarshaller;
 import com.github.jeasyrest.core.IObjectProcessingResource;
+import com.github.jeasyrest.core.IUnmarshaller;
 
 public abstract class ObjectProcessingResource<Req, Res> extends ProcessingResource
         implements IObjectProcessingResource<Req, Res> {
 
-    protected abstract void marshall(Res response, Writer writer) throws IOException;
+    protected IObjectProcessingResource<Req, Res> setMarshaller(IMarshaller<Res> marshaller) {
+        this.marshaller = marshaller;
+        return this;
+    }
 
-    protected abstract Req unmarshall(Reader reader) throws IOException;
+    protected IObjectProcessingResource<Req, Res> setUnmarshaller(IUnmarshaller<Req> unmarshaller) {
+        this.unmarshaller = new CheckEmptyUnmarshaller<Req>(unmarshaller);
+        return this;
+    }
 
     @Override
     public final void process(Reader reader, Writer writer) throws IOException {
-        Req request = unmarshall(reader);
+        Req request = null;
+        if (unmarshaller != null && reader != null) {
+            request = unmarshaller.unmarshall(reader);
+        }
         Res response = process(request);
-        marshall(response, writer);
+        if (marshaller != null && writer != null && response != null) {
+            marshaller.marshall(response, writer);
+        }
     }
 
+    private IMarshaller<Res> marshaller;
+    private IUnmarshaller<Req> unmarshaller;
 }
