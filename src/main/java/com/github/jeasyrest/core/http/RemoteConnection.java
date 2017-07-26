@@ -17,15 +17,17 @@ public class RemoteConnection extends HttpURLConnection {
 
     @Override
     public void disconnect() {
+        connection.disconnect();
     }
 
     @Override
     public boolean usingProxy() {
-        return false;
+        return connection.usingProxy();
     }
 
     @Override
     public void connect() throws IOException {
+        connection.connect();
     }
 
     @Override
