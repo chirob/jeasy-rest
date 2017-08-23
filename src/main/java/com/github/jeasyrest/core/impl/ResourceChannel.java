@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import com.github.jeasyrest.core.IChannel;
+import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.io.UnavailableStreamException;
 import com.github.jeasyrest.core.io.WrapperChannel;
 import com.github.jeasyrest.io.util.AutoclosingReader;
@@ -40,11 +41,17 @@ class ResourceChannel extends WrapperChannel {
             throw new UnavailableStreamException(e);
         }
     }
-    
-    ResourceChannel(IChannel channel) {
+
+    public Method getMethod() {
+        return method;
+    }
+
+    ResourceChannel(IChannel channel, Method method) {
         super(channel);
+        this.method = method;
     }
 
     private Writer writer;
+    private Method method;
 
 }

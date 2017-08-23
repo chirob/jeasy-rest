@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import com.github.jeasyrest.core.IResource.Method;
+
 public class RemoteConnection extends HttpURLConnection {
 
     @Override
@@ -269,29 +271,16 @@ public class RemoteConnection extends HttpURLConnection {
     public void setRequestProperty(String key, String value) {
         connection.setRequestProperty(key, value);
         if ("Content-Type".equalsIgnoreCase(key)) {
-            MimeType contentType = null;
-            try {
-                contentType = new MimeType(value);
-            } catch (MimeTypeParseException e) {
-                throw new IllegalArgumentException(e);
-            }
-            try {
-                resource.getRemoteChannel().setContentMimeType(contentType);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            String type = contentType.getBaseType();
-            if ("application/xml".equals(type)) {
-                resource.setXmlMarshall();
-            } else if ("application/json".equals(type)) {
-                resource.setJsonMarshall();
-            }
+            setContentType(value);
         }
     }
 
     @Override
     public void addRequestProperty(String key, String value) {
         connection.addRequestProperty(key, value);
+        if ("Content-Type".equalsIgnoreCase(key)) {
+            setContentType(value);
+        }
     }
 
     @Override
@@ -302,6 +291,27 @@ public class RemoteConnection extends HttpURLConnection {
     @Override
     public Map<String, List<String>> getRequestProperties() {
         return connection.getRequestProperties();
+    }
+
+    protected void setContentType(String contentType) {
+        MimeType mimeContentType = null;
+        try {
+            mimeContentType = new MimeType(contentType);
+        } catch (MimeTypeParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+        try {
+            Method method = Method.valueOf(connection.getRequestMethod().toUpperCase());
+            resource.getRemoteChannel(method).setContentMimeType(mimeContentType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String type = mimeContentType.getBaseType();
+        if ("application/xml".equals(type)) {
+            resource.setXmlMarshall();
+        } else if ("application/json".equals(type)) {
+            resource.setJsonMarshall();
+        }
     }
 
     protected RemoteConnection(RemoteResource<?, ?> resource) throws IOException {

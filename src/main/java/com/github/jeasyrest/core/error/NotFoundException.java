@@ -4,7 +4,7 @@ package com.github.jeasyrest.core.error;
 public class NotFoundException extends RSException {
 
     public NotFoundException(String resourcePath) {
-        super(404, "The resource '" + resourcePath + " has not been found");
+        super(Codes.STATUS_404, "The resource '" + resourcePath + " has not been found");
     }
 
 }

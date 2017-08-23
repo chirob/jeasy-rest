@@ -3,43 +3,43 @@ package com.github.jeasyrest.core.json;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
-import java.io.Reader;
+import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
-import com.github.jeasyrest.core.xml.JAXBUnmarshaller;
+import com.github.jeasyrest.core.xml.JAXBMarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public class JSONUnmarshaller<T> extends JAXBUnmarshaller<T> {
+public class JsonToXmlMarshaller<T> extends JAXBMarshaller<T> {
 
-    public JSONUnmarshaller(Class<? extends T> type) {
+    public JsonToXmlMarshaller(Class<? extends T> type) {
         this(type, null);
     }
 
-    public JSONUnmarshaller(Class<? extends T> type, String rootTag) {
+    public JsonToXmlMarshaller(Class<? extends T> type, String rootTag) {
         super(type);
         String root = rootTag == null ? type.getSimpleName().toLowerCase() : rootTag;
         transformer = new JsonToXmlTransformer(root);
     }
 
     @Override
-    public T unmarshall(Reader reader) throws IOException {
-        final Reader freader = reader;
+    public void marshall(T object, Writer writer) throws IOException {
+        final T fobject = object;
         final PipedWriter pwriter = new PipedWriter();
-        final PipedReader preader = new PipedReader(pwriter);
         ThreadExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    transformer.fromJsonToXml(freader, pwriter);
+                    JsonToXmlMarshaller.super.marshall(fobject, pwriter);
                 } catch (Throwable t) {
-                    throw new RuntimeException("Unmarshalling error", t);
+                    throw new RuntimeException("Marshalling error", t);
                 } finally {
                     IOUtils.close(pwriter);
                 }
             }
         });
+        PipedReader preader = new PipedReader(pwriter);
         try {
-            return super.unmarshall(preader);
+            transformer.fromJsonToXml(preader, writer);
         } finally {
             IOUtils.close(preader);
         }

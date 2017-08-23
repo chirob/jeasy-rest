@@ -14,12 +14,12 @@ public class EchoJSONProcessingResourceTest extends JsonTest {
 
     @Test
     public void runWithAuthentication() {
-        run(true);
+        run(RUN_METHOD, this, true);
     }
 
     @Test
     public void runWithoutAuthentication() {
-        run(false);
+        run(RUN_METHOD, this, false);
     }
 
     public void test1() throws IOException, JAXBException {

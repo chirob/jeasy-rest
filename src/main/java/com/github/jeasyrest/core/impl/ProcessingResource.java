@@ -9,15 +9,59 @@ import java.io.Writer;
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
 import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IProcessingResource;
+import com.github.jeasyrest.core.error.RSException;
+import com.github.jeasyrest.core.error.RSException.Codes;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public abstract class ProcessingResource extends Resource implements IProcessingResource {
-
-    public abstract void process(Reader reader, Writer writer) throws IOException;
+public class ProcessingResource extends Resource implements IProcessingResource {
 
     @Override
     public IChannel openChannel(Method method) throws IOException {
-        return new PipeChannel(this);
+        return new PipeChannel(this, method);
+    }
+
+    @Override
+    public void process(Reader reader, Writer writer, Method method) throws IOException {
+        switch (method) {
+        case DELETE:
+            processDelete(reader, writer);
+        case GET:
+            processGet(reader, writer);
+        case OPTIONS:
+            processOptions(reader, writer);
+        case PATCH:
+            processPatch(reader, writer);
+        case POST:
+            processPost(reader, writer);
+        case PUT:
+            processPut(reader, writer);
+        default:
+            throw new IllegalArgumentException("Invalid method: " + method);
+        }
+    }
+
+    protected void processDelete(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled DELETE resource");
+    }
+
+    protected void processGet(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled GET resource");
+    }
+
+    protected void processOptions(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled OPTIONS resource");
+    }
+
+    protected void processPatch(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled PATCH resource");
+    }
+
+    protected void processPost(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled POST resource");
+    }
+
+    protected void processPut(Reader reader, Writer writer) {
+        throw new RSException(Codes.STATUS_500, "Unhandled PUT resource");
     }
 
     private static final class PipeChannel extends Channel {
@@ -55,8 +99,9 @@ public abstract class ProcessingResource extends Resource implements IProcessing
             return resource == null;
         }
 
-        private PipeChannel(ProcessingResource resource) {
+        private PipeChannel(ProcessingResource resource, Method method) {
             this.resource = resource;
+            this.method = method;
         }
 
         private void closeStreams() {
@@ -68,7 +113,7 @@ public abstract class ProcessingResource extends Resource implements IProcessing
                 @Override
                 public void run() {
                     try {
-                        resource.process(preaderIn, pwriterOut);
+                        resource.process(preaderIn, pwriterOut, method);
                     } catch (Throwable t) {
                         throw new RuntimeException("Resource processing error", t);
                     } finally {
@@ -84,6 +129,7 @@ public abstract class ProcessingResource extends Resource implements IProcessing
         private PipedWriter pwriterOut;
 
         private ProcessingResource resource;
+        private Method method;
     }
 
 }

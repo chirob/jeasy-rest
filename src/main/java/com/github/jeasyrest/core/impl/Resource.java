@@ -15,7 +15,7 @@ public abstract class Resource implements IResource {
     public final IChannel getChannel(Method method) throws IOException {
         ResourcePolicy.checkPermission(pathPattern, Arrays.asList(method));
         if (channel == null || channel.isClosed()) {
-            channel = new ResourceChannel(openChannel(method));
+            channel = new ResourceChannel(openChannel(method), method);
         }
         return channel;
     }
@@ -67,7 +67,7 @@ public abstract class Resource implements IResource {
     protected IChannel currentChannel() {
         return channel;
     }
-    
+
     void init(URI path, String pathPattern, Object[] parameters) {
         ResourcePolicy.checkPermission(pathPattern);
 

@@ -37,13 +37,12 @@ public final class ResourcePermission extends Permission {
             this.methods = Collections.unmodifiableCollection(methods);
         }
         actions = getMethodActions(methods);
-
     }
 
     @Override
     public boolean implies(Permission permission) {
         if (permission instanceof ResourcePermission) {
-            boolean implies = getName().equals(permission.getName());
+            boolean implies = permission.getName().matches(getName());
             if (implies) {
                 if (!(principals == null || principals.isEmpty())) {
                     Subject subject = Subject.getSubject(AccessController.getContext());

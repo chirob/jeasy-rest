@@ -6,6 +6,6 @@ import java.io.Writer;
 
 public interface IProcessingResource extends IResource {
 
-    void process(Reader reader, Writer writer) throws IOException;
+    void process(Reader reader, Writer writer, Method method) throws IOException;
 
 }

@@ -9,13 +9,13 @@ import com.github.jeasyrest.concurrent.util.ThreadExecutor;
 import com.github.jeasyrest.core.xml.JAXBMarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public class JSONMarshaller<T> extends JAXBMarshaller<T> {
+public class XmlToJsonMarshaller<T> extends JAXBMarshaller<T> {
 
-    public JSONMarshaller(Class<? extends T> type) {
+    public XmlToJsonMarshaller(Class<? extends T> type) {
         this(type, null);
     }
 
-    public JSONMarshaller(Class<? extends T> type, String rootTag) {
+    public XmlToJsonMarshaller(Class<? extends T> type, String rootTag) {
         super(type);
         String root = rootTag == null ? type.getSimpleName().toLowerCase() : rootTag;
         transformer = new JsonToXmlTransformer(root);
@@ -29,7 +29,7 @@ public class JSONMarshaller<T> extends JAXBMarshaller<T> {
             @Override
             public void run() {
                 try {
-                    JSONMarshaller.super.marshall(fobject, pwriter);
+                    XmlToJsonMarshaller.super.marshall(fobject, pwriter);
                 } catch (Throwable t) {
                     throw new RuntimeException("Marshalling error", t);
                 } finally {

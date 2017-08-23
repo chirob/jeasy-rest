@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,20 +36,29 @@ public class BaseTest {
 
     protected void run() {
         Class<? extends BaseTest> testClass = BaseTest.this.getClass();
-        for (Method method : testClass.getMethods()) {
+        Method[] methods = testClass.getMethods();
+        Arrays.sort(methods, new Comparator<Method>() {
+            @Override
+            public int compare(Method o1, Method o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+        for (Method method : methods) {
             if (!method.getName().startsWith("run") && method.getDeclaringClass().equals(testClass)) {
                 long startTime = System.currentTimeMillis();
-                logger.info("Start time (millis): {}", startTime);
+                logger.info("\n\n********************** Method " + method.getName()
+                        + " - Start time (millis): {} **********************", startTime);
                 try {
                     method.invoke(BaseTest.this);
                 } catch (InvocationTargetException e) {
-                    e.getTargetException().printStackTrace();
+                    logger.error(e.getTargetException().getMessage(), e.getTargetException());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 } finally {
                     long endTime = System.currentTimeMillis();
-                    logger.info("End time (millis): {}", endTime);
-                    logger.info("Method " + method.getName() + " elapsed time (millis): {}", (endTime - startTime));
+                    logger.info("Method " + method.getName() + " - End time (millis): {}", endTime);
+                    logger.info("\n********************** Method " + method.getName()
+                            + " - Elapsed time (millis): {} **********************", (endTime - startTime));
                 }
             }
         }

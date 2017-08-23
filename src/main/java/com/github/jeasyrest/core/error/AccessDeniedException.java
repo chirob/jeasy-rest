@@ -8,7 +8,7 @@ import com.github.jeasyrest.core.IResource.Method;
 public class AccessDeniedException extends RSException {
 
     public AccessDeniedException(String resourcePath, Collection<Method> methods) {
-        super(403, getMessage(resourcePath, methods));
+        super(Codes.STATUS_403, getMessage(resourcePath, methods));
     }
 
     private static String getMessage(String resourcePath, Collection<Method> methods) {

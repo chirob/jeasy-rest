@@ -5,7 +5,7 @@ import com.github.jeasyrest.core.xml.JAXBProcessingResource;
 public class EchoJAXBProcessingResource extends JAXBProcessingResource<Customer, Customer> {
 
     @Override
-    public Customer process(Customer request) {
+    public Customer process(Customer request, Method method) {
         return null;
     }
 

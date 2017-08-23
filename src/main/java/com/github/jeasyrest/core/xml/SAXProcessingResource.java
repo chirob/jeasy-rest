@@ -18,7 +18,7 @@ public abstract class SAXProcessingResource extends ProcessingResource {
     protected abstract ContentHandler getContentHandler(Writer writer);
 
     @Override
-    public final void process(Reader reader, Writer writer) throws IOException {
+    public final void process(Reader reader, Writer writer, Method method) throws IOException {
         try {
             Reader sourceReader = reader;
             if (sourceReader != null) {

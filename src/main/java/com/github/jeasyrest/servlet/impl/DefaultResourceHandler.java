@@ -36,7 +36,7 @@ public class DefaultResourceHandler implements ResourceHandler {
             requestReader = request.getReader();
             responseWriter = response.getWriter();
             if (resource instanceof ProcessingResource) {
-                ((ProcessingResource) resource).process(requestReader, responseWriter);
+                ((ProcessingResource) resource).process(requestReader, responseWriter, method);
             } else {
                 IChannel channel = resource.getChannel(method);
 

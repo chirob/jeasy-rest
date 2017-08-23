@@ -85,14 +85,6 @@ public class RemoteChannel implements IChannel {
         return connection;
     }
 
-    public void setContentType(String contentType) throws IOException {
-        getConnection().setRequestProperty("Content-Type", contentType.toString());
-    }
-
-    public String getContentType() throws IOException {
-        return getConnection().getRequestProperty("Content-Type");
-    }
-
     public RemoteChannel(RemoteResource<?, ?> resource, Method method) throws IOException {
         this.method = method;
         this.resource = resource;

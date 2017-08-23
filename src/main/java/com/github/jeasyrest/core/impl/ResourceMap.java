@@ -4,14 +4,11 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.github.jeasyrest.core.IResource;
 import com.github.jeasyrest.core.security.ResourcePolicy;
 import com.github.jeasyrest.ioc.util.InjectionMap;
-import com.github.jeasyrest.reflect.InstanceConstructor;
 
 class ResourceMap extends InjectionMap {
 
@@ -26,6 +23,7 @@ class ResourceMap extends InjectionMap {
         } else {
             idSet = injectors.keySet();
         }
+        String resId = null;
         for (String id : idSet) {
             String pathPattern = id.replaceAll("\\{\\d+\\}", ".+");
             if (resourcePath.matches(pathPattern)) {
@@ -35,6 +33,7 @@ class ResourceMap extends InjectionMap {
                     throw new IllegalArgumentException(e);
                 }
                 resPathPattern = pathPattern;
+                resId = id;
                 break;
             }
         }
@@ -43,7 +42,7 @@ class ResourceMap extends InjectionMap {
             return null;
         } else {
             URI resPath = URI.create(resourcePath);
-            T resource = newResourceInstance(resPathPattern);
+            T resource = newInstance(resId);
             ((Resource) resource).init(resPath, resPathPattern, resParameters);
             return resource;
         }
@@ -53,16 +52,6 @@ class ResourceMap extends InjectionMap {
     ResourceMap() {
         super("META-INF/jeasyrest/resources", "jeasyrest/resources");
         ResourcePolicy.initialize();
-    }
-
-    private <T extends IResource> T newResourceInstance(String resPathPattern) {
-        for (Entry<String, List<InstanceConstructor<?>>> entry : injectors.entrySet()) {
-            String id = entry.getKey();
-            if (id.matches(resPathPattern)) {
-                return newInstance(id);
-            }
-        }
-        return null;
     }
 
     private static final Object[] EMPTY_PARAMS = new Object[0];

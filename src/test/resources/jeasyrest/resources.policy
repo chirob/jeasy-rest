@@ -1,5 +1,5 @@
-/test/services/echo=TEST:get,post
-/test/services/xml/jaxb/echo=TEST:get,post
-/test/services/json/echo=TEST:get,post
+.*/test/services/echo.*=TEST:get,post
+.*/test/services/xml/jaxb.*echo=TEST:get,post
+.*/test/services/json/echo.*=TEST:get,post
 
 http\://localhost\:8000/rs.+=TEST:get,post

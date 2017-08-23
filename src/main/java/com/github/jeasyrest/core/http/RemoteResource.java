@@ -11,8 +11,8 @@ import com.github.jeasyrest.core.IUnmarshaller;
 import com.github.jeasyrest.core.impl.CheckEmptyUnmarshaller;
 import com.github.jeasyrest.core.impl.ProcessingResource;
 import com.github.jeasyrest.core.io.WrapperChannel;
-import com.github.jeasyrest.core.json.JSONMarshaller;
-import com.github.jeasyrest.core.json.JSONUnmarshaller;
+import com.github.jeasyrest.core.json.JsonToXmlUnmarshaller;
+import com.github.jeasyrest.core.json.XmlToJsonMarshaller;
 import com.github.jeasyrest.core.xml.JAXBMarshaller;
 import com.github.jeasyrest.core.xml.JAXBUnmarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
@@ -24,44 +24,34 @@ public class RemoteResource<Req, Res> extends ProcessingResource implements IObj
         return new RemoteChannel(this, method);
     }
 
-    public RemoteResource(String methodName, String requestClassName, String requestRootTag, String responseClassName,
+    public RemoteResource(String requestClassName, String requestRootTag, String responseClassName,
             String responseRootTag) {
-        method = Method.valueOf(methodName == null ? "GET" : methodName);
-
         if (requestClassName != null) {
             Class<? extends Req> requestClass = getClass(requestClassName);
             xmlMarshaller = new JAXBMarshaller<Req>(requestClass);
-            jsonMarshaller = new JSONMarshaller<Req>(requestClass, requestRootTag);
+            jsonMarshaller = new XmlToJsonMarshaller<Req>(requestClass, requestRootTag);
         }
         if (responseClassName != null) {
             Class<? extends Res> responseClass = getClass(responseClassName);
             xmlUnmarshaller = new CheckEmptyUnmarshaller<Res>(new JAXBUnmarshaller<Res>(responseClass));
             jsonUnmarshaller = new CheckEmptyUnmarshaller<Res>(
-                    new JSONUnmarshaller<Res>(responseClass, responseRootTag));
+                    new JsonToXmlUnmarshaller<Res>(responseClass, responseRootTag));
         }
     }
 
-    public RemoteResource(String methodName, String requestClassName, String responseClassName) {
-        this(null, requestClassName, null, responseClassName, null);
-    }
-
     public RemoteResource(String requestClassName, String responseClassName) {
-        this(null, requestClassName, null, responseClassName, null);
-    }
-
-    public RemoteResource(String methodName) throws IOException {
-        this(methodName, null, null, null, null);
+        this(requestClassName, null, responseClassName, null);
     }
 
     public RemoteResource() throws IOException {
-        this(null, null, null, null, null);
+        this(null, null, null, null);
     }
 
     @Override
-    public void process(Reader reader, Writer writer) throws IOException {
+    public void process(Reader reader, Writer writer, Method method) throws IOException {
         IChannel channel = null;
         try {
-            channel = getRemoteChannel();
+            channel = getRemoteChannel(method);
             if (reader != null) {
                 IOUtils.write(reader, true, channel.getWriter(), true);
             }
@@ -83,12 +73,12 @@ public class RemoteResource<Req, Res> extends ProcessingResource implements IObj
     }
 
     @Override
-    public Res process(Req request) {
+    public Res process(Req request, Method method) {
         Reader reader = null;
         Writer writer = null;
         IChannel channel = null;
         try {
-            channel = getChannel();
+            channel = getChannel(method);
             if (request != null) {
                 writer = channel.getWriter();
                 if (writer != null) {
@@ -112,7 +102,7 @@ public class RemoteResource<Req, Res> extends ProcessingResource implements IObj
         }
     }
 
-    public IChannel getChannel() throws IOException {
+    public IChannel currentChannel(Method method) throws IOException {
         IChannel channel = currentChannel();
         if (channel == null) {
             channel = getChannel(method);
@@ -120,8 +110,8 @@ public class RemoteResource<Req, Res> extends ProcessingResource implements IObj
         return channel;
     }
 
-    public RemoteChannel getRemoteChannel() throws IOException {
-        IChannel channel = getChannel();
+    public RemoteChannel getRemoteChannel(Method method) throws IOException {
+        IChannel channel = currentChannel(method);
         if (channel instanceof WrapperChannel) {
             channel = ((WrapperChannel) channel).unwrap();
         }
@@ -138,7 +128,6 @@ public class RemoteResource<Req, Res> extends ProcessingResource implements IObj
         unmarshaller = jsonUnmarshaller;
     }
 
-    private Method method;
     private IMarshaller<Req> marshaller;
     private IUnmarshaller<Res> unmarshaller;
     private IMarshaller<Req> jsonMarshaller;

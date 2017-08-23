@@ -21,19 +21,19 @@ public class DefaultResourceResolver implements ResourceResolver {
             throws IOException, ServletException {
         final String resourcePath = request.getRequestURI().replace(request.getContextPath(), "");
         String resPathPattern = resourcePath.replaceAll("\\{\\d+\\}", ".+");
-        PooledInstance<IResource> resourceIntsance = RESOURCE_POOL.get(resPathPattern);
-        if (resourceIntsance == null) {
+        PooledInstance<IResource> resourceInstance = RESOURCE_POOL.get(resPathPattern);
+        if (resourceInstance == null) {
             Pool<IResource> pool = new Pool<IResource>(0, 20) {
                 @Override
                 protected IResource newInstance(Object... initArgs) {
                     return IResourceFinder.INSTANCE.find(resourcePath);
                 }
             };
-            resourceIntsance = new PooledInstance<IResource>(pool) {
+            resourceInstance = new PooledInstance<IResource>(pool) {
             };
-            RESOURCE_POOL.put(resPathPattern, resourceIntsance);
+            RESOURCE_POOL.put(resPathPattern, resourceInstance);
         }
-        return resourceIntsance;
+        return resourceInstance;
     }
 
     private static final Map<String, PooledInstance<IResource>> RESOURCE_POOL = new HashMap<String, PooledInstance<IResource>>();
