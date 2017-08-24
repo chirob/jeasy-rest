@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core.json;
+package com.github.jeasyrest.core.process.json;
 
 import com.github.jeasyrest.core.impl.ObjectProcessingResource;
 

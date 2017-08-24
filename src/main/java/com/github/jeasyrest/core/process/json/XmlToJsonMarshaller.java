@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core.json;
+package com.github.jeasyrest.core.process.json;
 
 import java.io.IOException;
 import java.io.PipedReader;
@@ -6,7 +6,8 @@ import java.io.PipedWriter;
 import java.io.Writer;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
-import com.github.jeasyrest.core.xml.JAXBMarshaller;
+import com.github.jeasyrest.core.process.json.util.Capitalizer;
+import com.github.jeasyrest.core.process.xml.JAXBMarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
 
 public class XmlToJsonMarshaller<T> extends JAXBMarshaller<T> {
@@ -17,7 +18,7 @@ public class XmlToJsonMarshaller<T> extends JAXBMarshaller<T> {
 
     public XmlToJsonMarshaller(Class<? extends T> type, String rootTag) {
         super(type);
-        String root = rootTag == null ? type.getSimpleName().toLowerCase() : rootTag;
+        String root = rootTag == null ? Capitalizer.firstCharToLowerCase(type.getSimpleName()) : rootTag;
         transformer = new JsonToXmlTransformer(root);
     }
 

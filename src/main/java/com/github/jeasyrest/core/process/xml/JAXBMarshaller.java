@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core.xml;
+package com.github.jeasyrest.core.process.xml;
 
 import java.io.IOException;
 import java.io.Writer;

@@ -1,4 +1,4 @@
-package com.github.jeasyrest.core.json;
+package com.github.jeasyrest.core.process.json;
 
 import java.io.IOException;
 import java.io.PipedReader;
@@ -6,18 +6,19 @@ import java.io.PipedWriter;
 import java.io.Reader;
 
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
-import com.github.jeasyrest.core.xml.JAXBUnmarshaller;
+import com.github.jeasyrest.core.process.json.util.Capitalizer;
+import com.github.jeasyrest.core.process.xml.JAXBUnmarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public class JsonToXmlUnmarshaller<T> extends JAXBUnmarshaller<T> {
+public class XmlToJsonUnmarshaller<T> extends JAXBUnmarshaller<T> {
 
-    public JsonToXmlUnmarshaller(Class<? extends T> type) {
+    public XmlToJsonUnmarshaller(Class<? extends T> type) {
         this(type, null);
     }
 
-    public JsonToXmlUnmarshaller(Class<? extends T> type, String rootTag) {
+    public XmlToJsonUnmarshaller(Class<? extends T> type, String rootTag) {
         super(type);
-        String root = rootTag == null ? type.getSimpleName().toLowerCase() : rootTag;
+        String root = rootTag == null ? Capitalizer.firstCharToLowerCase(type.getSimpleName()) : rootTag;
         transformer = new JsonToXmlTransformer(root);
     }
 
@@ -30,7 +31,7 @@ public class JsonToXmlUnmarshaller<T> extends JAXBUnmarshaller<T> {
             @Override
             public void run() {
                 try {
-                    transformer.fromJsonToXml(freader, pwriter);
+                    transformer.fromXmlToJson(freader, pwriter);
                 } catch (Throwable t) {
                     throw new RuntimeException("Unmarshalling error", t);
                 } finally {

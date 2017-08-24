@@ -1,6 +1,6 @@
 package com.github.jeasyrest.test.core.json;
 
-import com.github.jeasyrest.core.json.JSONProcessingResource;
+import com.github.jeasyrest.core.process.json.JSONProcessingResource;
 import com.github.jeasyrest.test.core.xml.jaxb.Customer;
 
 public class EchoJSONProcessingResource extends JSONProcessingResource<Customer, Customer> {

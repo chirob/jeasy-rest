@@ -11,10 +11,10 @@ import com.github.jeasyrest.core.IUnmarshaller;
 import com.github.jeasyrest.core.impl.CheckEmptyUnmarshaller;
 import com.github.jeasyrest.core.impl.ProcessingResource;
 import com.github.jeasyrest.core.io.WrapperChannel;
-import com.github.jeasyrest.core.json.JsonToXmlUnmarshaller;
-import com.github.jeasyrest.core.json.XmlToJsonMarshaller;
-import com.github.jeasyrest.core.xml.JAXBMarshaller;
-import com.github.jeasyrest.core.xml.JAXBUnmarshaller;
+import com.github.jeasyrest.core.process.json.JsonToXmlUnmarshaller;
+import com.github.jeasyrest.core.process.json.XmlToJsonMarshaller;
+import com.github.jeasyrest.core.process.xml.JAXBMarshaller;
+import com.github.jeasyrest.core.process.xml.JAXBUnmarshaller;
 import com.github.jeasyrest.io.util.IOUtils;
 
 public class RemoteResource<Req, Res> extends ProcessingResource implements IObjectProcessingResource<Req, Res> {

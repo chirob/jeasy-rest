@@ -14,18 +14,16 @@ public class Headers extends AbstractHeaders {
     @Override
     protected ListIterator<Entry<String, Iterable<String>>> entryIterator() {
         return new ListIterator<Entry<String, Iterable<String>>>() {
-            private HttpServletRequest request;
-            private HttpServletResponse response;
             private Iterator<String> headerNames;
             private Entry<String, Iterable<String>> current;
 
             {
-                if (requestHeaders) {
+                if (response == null) {
                     request = IRunningContext.INSTANCE.getInstance(HttpServletRequest.class);
                     headerNames = new Iterator<String>() {
                         @Override
                         public boolean hasNext() {
-                            return en.hasMoreElements();
+                            return en != null && en.hasMoreElements();
                         }
 
                         @Override
@@ -38,7 +36,7 @@ public class Headers extends AbstractHeaders {
                             throw new UnsupportedOperationException();
                         }
 
-                        private Enumeration<String> en = request.getHeaderNames();
+                        private Enumeration<String> en = request == null ? null : request.getHeaderNames();
                     };
                 } else {
                     response = IRunningContext.INSTANCE.getInstance(HttpServletResponse.class);
@@ -55,7 +53,7 @@ public class Headers extends AbstractHeaders {
             public Entry<String, Iterable<String>> next() {
                 final String key = headerNames.next();
                 Iterable<String> value = null;
-                if (requestHeaders) {
+                if (response == null) {
                     value = new Iterable<String>() {
                         @Override
                         public Iterator<String> iterator() {
@@ -112,7 +110,7 @@ public class Headers extends AbstractHeaders {
 
             @Override
             public void remove() {
-                if (requestHeaders) {
+                if (response == null) {
                     throw new UnsupportedOperationException();
                 } else {
                     response.setHeader(current.getKey(), "");
@@ -121,7 +119,7 @@ public class Headers extends AbstractHeaders {
 
             @Override
             public void add(Entry<String, Iterable<String>> e) {
-                if (requestHeaders) {
+                if (response == null) {
                     throw new UnsupportedOperationException();
                 } else {
                     for (String value : e.getValue()) {
@@ -129,7 +127,7 @@ public class Headers extends AbstractHeaders {
                     }
                 }
             }
-            
+
             @Override
             public boolean hasPrevious() {
                 throw new UnsupportedOperationException();
@@ -157,10 +155,15 @@ public class Headers extends AbstractHeaders {
         };
     }
 
-    protected Headers(boolean requestHeaders) {
-        this.requestHeaders = requestHeaders;
+    protected Headers(HttpServletRequest request) {
+        this.request = request;
     }
 
-    private boolean requestHeaders;
+    protected Headers(HttpServletResponse response) {
+        this.response = response;
+    }
+
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
 }

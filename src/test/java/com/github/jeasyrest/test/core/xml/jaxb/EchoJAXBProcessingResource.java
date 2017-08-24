@@ -1,6 +1,6 @@
 package com.github.jeasyrest.test.core.xml.jaxb;
 
-import com.github.jeasyrest.core.xml.JAXBProcessingResource;
+import com.github.jeasyrest.core.process.xml.JAXBProcessingResource;
 
 public class EchoJAXBProcessingResource extends JAXBProcessingResource<Customer, Customer> {
 
