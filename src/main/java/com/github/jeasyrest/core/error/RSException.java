@@ -1,8 +1,19 @@
 package com.github.jeasyrest.core.error;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 @SuppressWarnings("serial")
 public class RSException extends RuntimeException {
 
+    public static RSException wrap(Throwable t, Number status) {
+        if (t instanceof RSException) {
+            return ((RSException) t);
+        } else {
+            return new RSException(status, toString(t));
+        }
+    }    
+    
     public RSException(Number status, String message) {
         super("[" + status.intValue() + "] - " + getMessage(status, message));
         this.status = status.intValue();
@@ -154,4 +165,12 @@ public class RSException extends RuntimeException {
         return msg.toString();
     }
 
+    private static String toString(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+    
 }

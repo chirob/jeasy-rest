@@ -9,11 +9,9 @@ import java.io.Writer;
 import com.github.jeasyrest.concurrent.util.ThreadExecutor;
 import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IProcessingResource;
-import com.github.jeasyrest.core.error.RSException;
-import com.github.jeasyrest.core.error.RSException.Codes;
 import com.github.jeasyrest.io.util.IOUtils;
 
-public class ProcessingResource extends Resource implements IProcessingResource {
+public class ProcessingResource extends Resource implements IProcessingResource, ProcessDelegate {
 
     @Override
     public IChannel openChannel(Method method) throws IOException {
@@ -22,46 +20,23 @@ public class ProcessingResource extends Resource implements IProcessingResource 
 
     @Override
     public void process(Reader reader, Writer writer, Method method) throws IOException {
-        switch (method) {
-        case DELETE:
-            processDelete(reader, writer);
-        case GET:
-            processGet(reader, writer);
-        case OPTIONS:
-            processOptions(reader, writer);
-        case PATCH:
-            processPatch(reader, writer);
-        case POST:
-            processPost(reader, writer);
-        case PUT:
-            processPut(reader, writer);
-        default:
-            throw new IllegalArgumentException("Invalid method: " + method);
+        initProcessDelegate().process(reader, writer, method);
+    }
+
+    protected ProcessDelegate getProcessDelegate() {
+        return delegate;
+    }
+
+    protected ProcessingResource setProcessDelegate(ProcessDelegate delegate) {
+        this.delegate = delegate;
+        return this;
+    }
+
+    protected ProcessDelegate initProcessDelegate() {
+        if (delegate == null) {
+            delegate = new DefaultProcessDelegate();
         }
-    }
-
-    protected void processDelete(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled DELETE resource");
-    }
-
-    protected void processGet(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled GET resource");
-    }
-
-    protected void processOptions(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled OPTIONS resource");
-    }
-
-    protected void processPatch(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled PATCH resource");
-    }
-
-    protected void processPost(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled POST resource");
-    }
-
-    protected void processPut(Reader reader, Writer writer) {
-        throw new RSException(Codes.STATUS_500, "Unhandled PUT resource");
+        return delegate;
     }
 
     private static final class PipeChannel extends Channel {
@@ -132,4 +107,5 @@ public class ProcessingResource extends Resource implements IProcessingResource 
         private Method method;
     }
 
+    private ProcessDelegate delegate;
 }

@@ -1,32 +1,62 @@
 package com.github.jeasyrest.core.impl;
 
-import com.github.jeasyrest.core.IObjectProcessingResource;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+
+import com.github.jeasyrest.core.IResource.Method;
 import com.github.jeasyrest.core.error.RSException;
 import com.github.jeasyrest.core.error.RSException.Codes;
 
-public class DefaultProcessDelegate<Req, Res> implements ProcessDelegate<Req, Res> {
+public class DefaultProcessDelegate implements ProcessDelegate {
 
-    public Res processDelete(Req request, IObjectProcessingResource<Req, Res> resource) {
+    @Override
+    public void process(Reader reader, Writer writer, Method method) throws IOException {
+        switch (method) {
+        case DELETE:
+            processDelete(reader, writer);
+            break;
+        case GET:
+            processGet(reader, writer);
+            break;
+        case OPTIONS:
+            processOptions(reader, writer);
+            break;
+        case PATCH:
+            processPatch(reader, writer);
+            break;
+        case POST:
+            processPost(reader, writer);
+            break;
+        case PUT:
+            processPut(reader, writer);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid method: " + method);
+        }
+    }
+
+    protected void processDelete(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled DELETE resource");
     }
 
-    public Res processGet(Req request, IObjectProcessingResource<Req, Res> resource) {
+    protected void processGet(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled GET resource");
     }
 
-    public Res processOptions(Req request, IObjectProcessingResource<Req, Res> resource) {
+    protected void processOptions(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled OPTIONS resource");
     }
 
-    public Res processPatch(Req request, IObjectProcessingResource<Req, Res> resource) {
+    protected void processPatch(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled PATCH resource");
     }
 
-    public Res processPost(Req request, IObjectProcessingResource<Req, Res> resource) {
+    protected void processPost(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled POST resource");
     }
 
-    public Res processPut(Req request, IObjectProcessingResource<Req, Res> resource) {
+    protected void processPut(Reader reader, Writer writer) throws IOException {
         throw new RSException(Codes.STATUS_500, "Unhandled PUT resource");
     }
 

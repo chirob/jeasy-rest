@@ -1,10 +1,9 @@
 package com.github.jeasyrest.core.json;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.Iterator;
 
+import com.github.jeasyrest.core.IChannel;
 import com.github.jeasyrest.core.IHeaders;
 import com.github.jeasyrest.core.impl.ObjectProcessingResource;
 import com.github.jeasyrest.core.process.json.JsonToXmlUnmarshaller;
@@ -20,8 +19,9 @@ public abstract class ContentTypeProcessingResource<Req, Res> extends ObjectProc
     }
 
     @Override
-    public void process(Reader reader, Writer writer, Method method) throws IOException {
-        String contentType = getContentType();
+    public IChannel openChannel(Method method) throws IOException {
+        IChannel channel = super.openChannel(method);
+        String contentType = getContentType(channel.requestHeaders());
         if (contentType != null) {
             if ("application/xml".equals(contentType)) {
                 if (responseType != null) {
@@ -41,25 +41,19 @@ public abstract class ContentTypeProcessingResource<Req, Res> extends ObjectProc
         if (requestType != null) {
             setUnmarshaller(new JsonToXmlUnmarshaller<Req>(requestType));
         }
-        super.process(reader, writer, method);
+        return channel;
     }
 
-    protected String getContentType() {
-        Iterator<String> contentTypes;
-        try {
-            IHeaders headers = currentChannel().requestHeaders();
-            if (headers == null) {
-                return null;
-            } else {
-                contentTypes = headers.get("Content-Type").iterator();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (contentTypes.hasNext()) {
-            return contentTypes.next();
+    protected String getContentType(IHeaders headers) {
+        if (headers == null) {
+            return null;
         } else {
-            return "";
+            Iterator<String> contentTypes = headers.get("Content-Type").iterator();
+            if (contentTypes.hasNext()) {
+                return contentTypes.next();
+            } else {
+                return "";
+            }
         }
     }
 

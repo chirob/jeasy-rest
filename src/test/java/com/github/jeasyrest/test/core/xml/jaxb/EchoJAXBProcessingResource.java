@@ -12,5 +12,5 @@ public class EchoJAXBProcessingResource extends JAXBProcessingResource<Customer,
     protected EchoJAXBProcessingResource() {
         super(Customer.class, Customer.class);
     }
-    
+
 }
