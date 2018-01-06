@@ -216,12 +216,12 @@ public class JsonToXmlTransformer {
                     if ("true".equals(text) || "false".equals(text)) {
                         return text;
                     }
-                    try {
-                        new BigDecimal(text);
-                        if (!text.startsWith("0")) {
+                    if (text.matches("\\.+\\.?\\.*")) {
+                        try {
+                            new BigDecimal(text);
                             return text;
+                        } catch (NumberFormatException e) {
                         }
-                    } catch (NumberFormatException e) {
                     }
                     return "\"" + text + "\"";
                 }
