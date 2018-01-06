@@ -216,7 +216,7 @@ public class JsonToXmlTransformer {
                     if ("true".equals(text) || "false".equals(text)) {
                         return text;
                     }
-                    if (text.matches("\\.+\\.?\\.*")) {
+                    if (text.matches(".+\\.?.*")) {
                         try {
                             new BigDecimal(text);
                             return text;
