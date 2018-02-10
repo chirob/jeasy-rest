@@ -14,6 +14,7 @@ public class JAXBUnmarshaller<T> implements IUnmarshaller<T> {
     public JAXBUnmarshaller(Class<? extends T> type) {
         try {
             unmarshaller = JAXBContexts.get(type).createUnmarshaller();
+            unmarshaller.setEventHandler(JAXBEventHandler.INSTANCE);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

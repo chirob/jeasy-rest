@@ -14,6 +14,7 @@ public class JAXBMarshaller<T> implements IMarshaller<T> {
     public JAXBMarshaller(Class<? extends T> type) {
         try {
             marshaller = JAXBContexts.get(type).createMarshaller();
+            marshaller.setEventHandler(JAXBEventHandler.INSTANCE);
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }

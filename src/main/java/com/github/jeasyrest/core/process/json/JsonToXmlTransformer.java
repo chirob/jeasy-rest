@@ -71,6 +71,15 @@ public class JsonToXmlTransformer {
                 }
 
                 @Override
+                public void endJson() throws IOException {
+                    try {
+                        xmlWriter.close();
+                    } catch (XMLStreamException e) {
+                        throw new IOException(e);
+                    }
+                }
+                
+                @Override
                 public void primitive(Object value) throws IOException {
                     try {
                         writeStartElement(elementStack.getLast().getKey());
@@ -162,6 +171,8 @@ public class JsonToXmlTransformer {
                         }
 
                         endElement = false;
+
+                        jsonType = attributes.getValue("json-type");
                     }
                 }
 
@@ -191,6 +202,8 @@ public class JsonToXmlTransformer {
                 @Override
                 public void endDocument() throws SAXException {
                     writeOutput("}");
+                    textValue.delete(0, textValue.length());
+                    arrayNames.clear();
                 }
 
                 @Override
@@ -206,6 +219,7 @@ public class JsonToXmlTransformer {
                     }
                 }
 
+                private String jsonType;
                 private String root;
                 private StringBuilder textValue;
                 private boolean endElement;
@@ -216,14 +230,20 @@ public class JsonToXmlTransformer {
                     if ("true".equals(text) || "false".equals(text)) {
                         return text;
                     }
-                    if (text.matches(".+\\.?.*")) {
-                        try {
-                            new BigDecimal(text);
+                    if (jsonType == null) {
+                        if (text.matches(".+\\.?.*")) {
+                            try {
+                                new BigDecimal(text);
+                                return text;
+                            } catch (NumberFormatException e) {
+                            }
+                        }
+                    } else {
+                        if (!"string".equals(jsonType)) {
                             return text;
-                        } catch (NumberFormatException e) {
                         }
                     }
-                    return "\"" + text + "\"";
+                    return "\"" + text.replace("\"", "\\\"") + "\"";
                 }
             };
         }
